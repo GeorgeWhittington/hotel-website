@@ -1,5 +1,6 @@
 {
     "db_host": "localhost",
+    "db_name": "hotel_site",
     "db_user": "",
     "db_password": ""
 }
