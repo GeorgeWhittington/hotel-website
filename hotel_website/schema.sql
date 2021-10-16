@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS locations (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name TEXT UNIQUE NOT NULL
+    location_name VARCHAR(100) UNIQUE NOT NULL
 );
 
 -- conversion rate is (GBP * conversion_rate) = amt in other currency
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS locations (
 -- Acronym's are in ISO 4217 format
 CREATE TABLE IF NOT EXISTS currencies (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    full_name TEXT UNIQUE NOT NULL,
+    full_name VARCHAR(50) UNIQUE NOT NULL,
     acronym CHAR(3) UNIQUE NOT NULL,
     conversion_rate DECIMAL(10, 2) NOT NULL
 );
@@ -25,14 +25,15 @@ CREATE TABLE IF NOT EXISTS hotels (
     id INT PRIMARY KEY AUTO_INCREMENT,
     location_id INT NOT NULL,
     base_currency_id INT NOT NULL,
-    standard_price DECIMAL(10, 2) NOT NULL,
+    peak_price DECIMAL(10, 2) NOT NULL,
+    off_peak_price DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (location_id) REFERENCES locations(id),
     FOREIGN KEY (base_currency_id) REFERENCES currencies(id)
 );
 
 CREATE TABLE IF NOT EXISTS room_types (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    type CHAR(2) UNIQUE NOT NULL,
+    type CHAR(1) UNIQUE NOT NULL,
     max_occupants INT NOT NULL
 );
 

@@ -1,5 +1,4 @@
 import click
-
 from flask import current_app, g
 from flask.cli import with_appcontext
 from flask_login import UserMixin
@@ -33,25 +32,68 @@ def close_db(e=None):
         db.close()
 
 
-def init_db():
+def populate_room_data():
     db = get_db()
     cursor = db.cursor()
+    
+    hotels = {
+        "Aberdeen": 80,
+        "Belfast": 80,
+        "Birmingham": 90,
+        "Bristol": 90,
+        "Cardiff": 80,
+        "Edinburgh": 90,
+        "Glasgow": 100,
+        "London": 120,
+        "Manchester": 110,
+        "Newcastle": 80,
+        "Norwich": 80,
+        "Nottingham": 100,
+        "Oxford": 80,
+        "Plymouth": 80,
+        "Swansea": 80
+    }
 
-    with current_app.open_resource("schema.sql") as f:
-        cursor.execute(f.read(), multi=True)
+    room_types = {
+        "S": 0.3,
+        "D": 0.5,
+        "F": 0.2
+    }
+
+    cursor.execute("SELECT id, type FROM room_types")
+    room_ids = cursor.fetchall()
+    room_ids = {type: id for id, type in room_ids}
+
+    for city, rooms in hotels.items():
+        calculated_room_types = {
+            room_type: int(percent * rooms)
+            for room_type, percent in room_types.items()}
+        
+        cursor.execute(
+            "SELECT hotels.id FROM hotels INNER JOIN locations ON hotels.location_id = locations.id WHERE %s = locations.location_name",
+            (city,))
+        hotel_id = cursor.fetchone()[0]
+
+        for room_type in calculated_room_types.keys():
+            for _ in range(calculated_room_types[room_type]):
+                cursor.execute(
+                    "INSERT INTO rooms (hotel_id, type_id) VALUE (%s, %s)",
+                    (hotel_id, room_ids[room_type]))
+    
+    db.commit()
 
 
-@click.command("init-db")
+@click.command("populate-room-data")
 @with_appcontext
-def init_db_command():
-    """Create new tables, if they don't already exist"""
-    init_db()
-    click.echo("Database initialised.")
+def populate_room_data_command():
+    """Populate the database with room data"""
+    populate_room_data()
+    click.echo("Database populated.")
 
 
 def init_app(app):
     app.teardown_appcontext(close_db)
-    app.cli.add_command(init_db_command)
+    app.cli.add_command(populate_room_data_command)
 
 
 class User(UserMixin):
@@ -59,7 +101,7 @@ class User(UserMixin):
         db = get_db()
         cursor = db.cursor()
 
-        cursor.execute("SELECT id FROM users WHERE id == %s", (user_id))
+        cursor.execute("SELECT id FROM users WHERE id = %s", (user_id))
         row = cursor.fetchone()
 
         if not row:
