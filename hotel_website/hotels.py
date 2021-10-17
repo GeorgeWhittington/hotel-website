@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 bp = Blueprint("hotels", __name__)
 
@@ -6,7 +6,7 @@ bp = Blueprint("hotels", __name__)
 @bp.route("/")
 def home():
     """Homepage, 'Where To?' widget, destination carousel, etc etc"""
-    pass
+    return render_template("hotels/home.html")
 
 
 @bp.route("/search")

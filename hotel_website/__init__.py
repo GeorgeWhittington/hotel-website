@@ -27,11 +27,13 @@ def create_app():
         DATABASE_PASSWORD=db_password
     )
 
-    from . import hotels, auth
-    app.register_blueprint(auth.bp)
-    app.register_blueprint(hotels.bp)    
-
     from . import db
     db.init_app(app)
+
+    from . import hotels, auth
+    app.register_blueprint(auth.bp)
+    app.register_blueprint(hotels.bp)
+
+    auth.login_manager.init_app(app)
 
     return app

@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS users (
   id INT PRIMARY KEY AUTO_INCREMENT,
   username VARCHAR(20) UNIQUE NOT NULL,
-  password VARCHAR(20) NOT NULL,
+  password CHAR(102) NOT NULL,
   admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS rooms (
 
 -- Make id random, consecutive = security flaw
 -- Ensure time_zone sys variable is set to UTC for TIMESTAMP
+-- Maybe make date_booked a DATE, and add created+updated fields (those should be TIMESTAMPS tho)
 CREATE TABLE IF NOT EXISTS bookings (
     id INT PRIMARY KEY AUTO_INCREMENT,
     room_id INT NOT NULL,

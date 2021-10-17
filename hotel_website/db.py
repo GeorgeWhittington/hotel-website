@@ -1,9 +1,9 @@
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
-from flask_login import UserMixin
 import mysql.connector
 from mysql.connector import errorcode
+from werkzeug.security import generate_password_hash
 
 
 def get_db():
@@ -32,7 +32,7 @@ def close_db(e=None):
         db.close()
 
 
-def populate_room_data():
+def populate_data():
     db = get_db()
     cursor = db.cursor()
     
@@ -80,31 +80,23 @@ def populate_room_data():
                     "INSERT INTO rooms (hotel_id, type_id) VALUE (%s, %s)",
                     (hotel_id, room_ids[room_type]))
     
+    data = [
+        ("admin", generate_password_hash("password1", method="pbkdf2:sha256:150000", salt_length=16), True),
+        ("george", generate_password_hash("password", method="pbkdf2:sha256:150000", salt_length=16), False)
+    ]
+    cursor.executemany("INSERT INTO users (username, password, admin) VALUES (%s, %s, %s)",data)
+
     db.commit()
 
 
-@click.command("populate-room-data")
+@click.command("populate-data")
 @with_appcontext
 def populate_room_data_command():
-    """Populate the database with room data"""
-    populate_room_data()
+    """Populate the database with data"""
+    populate_data()
     click.echo("Database populated.")
 
 
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(populate_room_data_command)
-
-
-class User(UserMixin):
-    def get(user_id):
-        db = get_db()
-        cursor = db.cursor()
-
-        cursor.execute("SELECT id FROM users WHERE id = %s", (user_id))
-        row = cursor.fetchone()
-
-        if not row:
-            return None
-        
-        return row[0]

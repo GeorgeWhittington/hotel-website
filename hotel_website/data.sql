@@ -1,8 +1,3 @@
-INSERT INTO users (username, password, admin)
-VALUES
-    ("admin", "password", TRUE),
-    ("george", "password", FALSE);
-
 INSERT INTO locations (location_name)
 VALUES
     ("Aberdeen"),
