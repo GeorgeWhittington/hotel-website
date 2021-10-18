@@ -13,25 +13,33 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   -->
 
+  <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
 <body>
   <nav>
-    <h1>Horizon Hotels</h1>
-    <ul>
+    <a href="/" class="nav-logo">Horizon Hotels</a>
+    <ul class="nav-menu">
+      <li class="nav-item">
+        {% if session.current_currency is defined %}
+          <a href="/set-currency">{{ session.current_currency }}</a>
+        {% else %}
+          <a href="/set-currency">GBP</a>
+        {% endif %}
+      </li>
       {% if current_user.is_authenticated %}
-        <li><span>{{ current_user.username }}</span></li>
-        <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+        <li class="nav-item"><a href="{{ url_for('auth.my_account') }}">My Account</a></li>
+        <li class="nav-item"><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
       {% else %}
-        <li><a href="{{ url_for('auth.register') }} ">Register</a></li>
-        <li><a href="{{ url_for('auth.login') }} ">Log In</a></li>
+        <li class="nav-item"><a href="{{ url_for('auth.register') }} ">Register</a></li>
+        <li class="nav-item"><a href="{{ url_for('auth.login') }} ">Log In</a></li>
       {% endif %}
     </ul>
+    <button><i class="fas fa-bars"></i></button>
   </nav>
   <section class="content">
-    <h1>{% block page_title %}{% endblock %}</h1>
     {% for message in get_flashed_messages() %}
       <div class="flash">{{ message }}</div>
     {% endfor %}

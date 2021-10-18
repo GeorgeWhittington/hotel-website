@@ -104,3 +104,9 @@ def register():
             return redirect(url_for("auth.login"))
     
     return render_template("auth/register.html", form=form)
+
+
+@bp.route("/my-account")
+@login_required
+def my_account():
+    return render_template("auth/my_account.html")
