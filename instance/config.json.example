@@ -1,6 +1,4 @@
 {
-    "db_host": "localhost",
-    "db_name": "hotel_site",
-    "db_user": "",
-    "db_password": ""
+    "db_uri": "mysql://username:password@server/db",
+    "secret_key": "development key"
 }

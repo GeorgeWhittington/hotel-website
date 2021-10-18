@@ -14,20 +14,16 @@ def create_app():
 
     with open(os.path.join(app.instance_path, "config.json")) as f:
         data = json.load(f)
-        db_host = data["db_host"]
-        db_name = data["db_name"]
-        db_user = data["db_user"]
-        db_password = data["db_password"]
+        db_uri = data["db_uri"]
+        secret_key = data["secret_key"]
     
     app.config.from_mapping(
-        SECRET_KEY="dev",  # Generate something actually secure and store it in config.json for prod
-        DATABASE_HOST=db_host,
-        DATABASE_NAME=db_name,
-        DATABASE_USER=db_user,
-        DATABASE_PASSWORD=db_password
+        SECRET_KEY=secret_key,  # This should be a cryptographically secure generated value for prod
+        SQLALCHEMY_DATABASE_URI=db_uri,
+        SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
 
-    from . import db
+    from .models import db, User, Location, Currency, Hotel, Roomtype, Room, Booking
     db.init_app(app)
 
     from . import hotels, auth
