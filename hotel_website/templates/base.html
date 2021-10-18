@@ -14,15 +14,15 @@
   -->
 
   <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
 </head>
 
 <body>
-  <nav>
+  <nav class="menu-closed">
     <a href="/" class="nav-logo">Horizon Hotels</a>
     <ul class="nav-menu">
-      <li class="nav-item">
+      <li>
         {% if session.current_currency is defined %}
           <a href="/set-currency">{{ session.current_currency }}</a>
         {% else %}
@@ -30,20 +30,25 @@
         {% endif %}
       </li>
       {% if current_user.is_authenticated %}
-        <li class="nav-item"><a href="{{ url_for('auth.my_account') }}">My Account</a></li>
-        <li class="nav-item"><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+        <li><a href="{{ url_for('auth.my_account') }}">My Account</a></li>
+        <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
       {% else %}
-        <li class="nav-item"><a href="{{ url_for('auth.register') }} ">Register</a></li>
-        <li class="nav-item"><a href="{{ url_for('auth.login') }} ">Log In</a></li>
+        <li><a href="{{ url_for('auth.register') }} ">Register</a></li>
+        <li><a href="{{ url_for('auth.login') }} ">Log In</a></li>
       {% endif %}
     </ul>
-    <button><i class="fas fa-bars"></i></button>
+    <a class="nav-button" aria-label="Open navigation menu" role="button">
+      <i class="fas fa-bars" aria-hidden="true"></i>
+    </a>
   </nav>
+  <div id="nav-clearance"></div>
   <section class="content">
     {% for message in get_flashed_messages() %}
       <div class="flash">{{ message }}</div>
     {% endfor %}
     {% block content %}{% endblock %}
   </section>
+
+<script src="{{ url_for('static', filename='js/nav-menu.js') }}"></script>
 </body>
 </html>
