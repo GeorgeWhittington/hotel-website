@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 
 {% block title %}Log In{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth_forms.css') }}">
+{% endblock %}
 {% block content %}
 <form method="POST" action="/login">
+  <span>Log In</span>
   {{ form.csrf_token }}
   {{ form.username.label }}
   {{ form.username() }}

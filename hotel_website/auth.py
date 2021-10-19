@@ -1,9 +1,9 @@
-from flask import Blueprint, redirect, url_for, flash
+from flask import Blueprint, redirect, url_for, flash, request
 from flask.templating import render_template
 from flask_login import LoginManager, login_manager, login_required
 from flask_login.utils import login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import DBAPIError
 
 from .models import db, User
 from .forms import UsernamePasswordForm
@@ -47,7 +47,9 @@ def register():
     form = UsernamePasswordForm()
 
     if form.validate_on_submit():
-        try:
+        if User.query.filter_by(username=form.username.data).first():
+            flash(f"The username {form.username.data} is taken.")
+        else:
             # Specifying exact hash parameters incase the default changes
             user = User(
                 username=form.username.data,
@@ -58,10 +60,11 @@ def register():
 
             db.session.add(user)
             db.session.commit()
-        except IntegrityError:
-            flash(f"The user {form.username.data} is already registered.")
-        else:
+
             return redirect(url_for("auth.login"))
+    
+    if request.method == "POST" and form.username.errors:
+        flash("Your username cannot be longer than 20 characters.")
     
     return render_template("auth/register.html", form=form)
 

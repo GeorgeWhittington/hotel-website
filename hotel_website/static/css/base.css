@@ -1,13 +1,28 @@
+/* Colourscheme: https://coolors.co/2274a5-f75c03-f1c40f-d90368-00cc66
+off-white for bg, darkest blue for text, red for text I want to highlight (links? submit buttons?)
+two other blues for various ui bg things.
+*/
+
+/* GENERAL */
+
 body {
     margin: 0;
     padding: 0;
     font-size: 16px;
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    background-color: #F1FAEE;
+    color: #1D3557;
 }
 
 body * {
     box-sizing: inherit;
+}
+
+section.content {
+    width: 70%;
+    margin: 60px auto;
 }
 
 /* NAV */
@@ -18,7 +33,7 @@ body * {
 }
 
 nav {
-    background-color: grey;
+    background-color: #A8DADC;
     overflow: hidden;
     height: 60px;
     transition: height 0.5s;
@@ -48,6 +63,7 @@ nav li {
 nav a {
     text-decoration: none;
     line-height: 60px;
+    color: #1D3557;
 }
 
 nav a:hover {
@@ -57,11 +73,13 @@ nav a:hover {
 nav .nav-logo {
     padding: 5px 15px;
     font-size: 1.25rem;
+    font-weight: 700;
 }
 
 nav li a,
 .selectNative {
     padding: 5px 0px 5px 10px;
+    color: #1D3557;
 }
 
 nav .nav-button {
@@ -73,6 +91,7 @@ nav .nav-button {
 .select {
     position: relative;
     display: inline;
+    line-height: 60px;
 }
 
 .selectWrapper {
@@ -81,14 +100,12 @@ nav .nav-button {
 }
 
 .selectNative {
-    background-color: grey;
+    background-color: #A8DADC;
     border: none;
 }
 
 .selectNative {
     position: relative;
-    -webkit-appearance: none;
-    -moz-appearance: none;
     font-family: inherit;
     font-size: 1rem;
 }
@@ -103,6 +120,10 @@ nav .nav-button {
 /* MOBILE */
 
 @media only screen and (max-width: 768px) {
+    section.content {
+        width: 90%;
+    }
+
     nav {
         display: initial;
     }
@@ -125,5 +146,6 @@ nav .nav-button {
         top: 0;
         line-height: 60px;
         padding: 0 15px;
+        font-size: 2em;
     }
 }

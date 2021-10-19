@@ -26,6 +26,13 @@ function toggleNav() {
     }
 }
 
+function toggleNavKeyboard(e) {
+    // Spacebar
+    if (e.keyCode === 32) {
+        toggleNav();
+    }
+}
+
 function closeNavMenu() {
     if (window.innerWidth > 768) {
         collapseSection();
@@ -42,4 +49,5 @@ function currencyUpdate(event) {
 
 window.addEventListener("resize", closeNavMenu);
 navButton.addEventListener("click", toggleNav);
+navButton.addEventListener("keyup", toggleNavKeyboard);
 navCurrencySelect.addEventListener("change", currencyUpdate);
