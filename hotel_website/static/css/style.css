@@ -2,7 +2,15 @@ body {
     margin: 0;
     padding: 0;
     font-size: 16px;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
 }
+
+body * {
+    box-sizing: inherit;
+}
+
+/* NAV */
 
 #nav-clearance {
     height: 60px;
@@ -51,7 +59,8 @@ nav .nav-logo {
     font-size: 1.25rem;
 }
 
-nav li a {
+nav li a,
+.selectNative {
     padding: 5px 0px 5px 10px;
 }
 
@@ -59,7 +68,39 @@ nav .nav-button {
     display: none;
 }
 
-/* Mobile */
+/* CURRENCY SELECT */
+
+.select {
+    position: relative;
+    display: inline;
+}
+
+.selectWrapper {
+    position: relative;
+    display: inline;
+}
+
+.selectNative {
+    background-color: grey;
+    border: none;
+}
+
+.selectNative {
+    position: relative;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+/* hidden from view but *not* from screenreaders */
+#currencyLabel {
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+}
+
+/* MOBILE */
 
 @media only screen and (max-width: 768px) {
     nav {
@@ -72,7 +113,8 @@ nav .nav-button {
         padding: 0;
     }
 
-    nav li a {
+    nav li a,
+    .selectNative {
         padding: 5px 15px;
     }
 

@@ -1,7 +1,4 @@
-from typing import Optional
-
-from flask import Blueprint, request, redirect, url_for, flash
-import flask
+from flask import Blueprint, redirect, url_for, flash
 from flask.templating import render_template
 from flask_login import LoginManager, login_manager, login_required
 from flask_login.utils import login_user, logout_user
@@ -30,7 +27,7 @@ def login():
                 login_user(user)
                 flash("Logged in.")
 
-                return redirect(flask.url_for("hotels.home"))
+                return redirect(url_for("hotels.home"))
         
         flash("The username or password you have entered is invalid.")
     return render_template("auth/login.html", form=form)
@@ -40,6 +37,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    flash("Logged out.")
     return redirect("/")
 
 

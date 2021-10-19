@@ -32,4 +32,9 @@ def create_app():
 
     auth.login_manager.init_app(app)
 
+    @app.context_processor
+    def utility_processor():
+        currencies = Currency.query.all()
+        return dict(currencies=currencies)
+
     return app
