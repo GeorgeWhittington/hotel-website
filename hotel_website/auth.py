@@ -3,7 +3,6 @@ from flask.templating import render_template
 from flask_login import LoginManager, login_manager, login_required
 from flask_login.utils import login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
-from sqlalchemy.exc import DBAPIError
 
 from .models import db, User
 from .forms import UsernamePasswordForm

@@ -39,12 +39,10 @@ function closeNavMenu() {
     }
 }
 
+// Link currency select in nav bar to a cookie
 function currencyUpdate(event) {
-    console.log(event);
-    // TODO: disable if cookies are opted out of?
-
-    console.log(event.target.value);
     document.cookie = "current_currency=" + event.target.value;
+    window.location.reload();
 }
 
 window.addEventListener("resize", closeNavMenu);

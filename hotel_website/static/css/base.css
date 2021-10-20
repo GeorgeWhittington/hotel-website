@@ -21,8 +21,19 @@ body * {
 }
 
 section.content {
-    width: 70%;
-    margin: 60px auto;
+    width: 80%;
+    margin: 15px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+section.content .flash {
+    width: 100%;
+    background-color: #A8DADC;
+    padding: 1rem 15px;
+    border-radius: 0.4rem;
+    margin-bottom: 15px;
 }
 
 /* NAV */
@@ -102,9 +113,6 @@ nav .nav-button {
 .selectNative {
     background-color: #A8DADC;
     border: none;
-}
-
-.selectNative {
     position: relative;
     font-family: inherit;
     font-size: 1rem;

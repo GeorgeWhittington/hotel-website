@@ -1,17 +1,5 @@
-section.content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    
-}
-
-section .flash {
+section.content .flash {
     width: 500px;
-    background-color: #A8DADC;
-    padding: 1rem 15px;
-    border-radius: 0.4rem;
-    margin-bottom: 15px;
 }
 
 form {
@@ -49,8 +37,8 @@ form label {
 }
 
 @media only screen and (max-width: 768px) {
-    section .flash,
+    section.content .flash,
     form {
-        width: 90%
+        width: 100%
     }
 }

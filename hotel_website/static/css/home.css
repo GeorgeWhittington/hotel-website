@@ -1,0 +1,54 @@
+.hero {
+    width: 100%;
+    background-color: #A8DADC;
+    padding: 0 15px;
+    border-radius: 0.4rem;
+}
+
+.hero span {
+    display: block;
+    font-weight: 700;
+    margin: 1rem 0;
+    font-size: 2rem;
+}
+
+.hero form {
+    margin: 1rem 0;
+    display: grid;
+    column-gap: 0.5rem;
+    row-gap: 0.5rem;
+    /* grid-template-columns: repeat(5, 1fr); */
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.hero form select,
+.hero form input[type="date"],
+.hero form input[type="number"] {
+    background-color: #F1FAEE;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    border-radius: 0.4rem;
+}
+
+.hero form input[type="submit"] {
+    background-color: #E63946;
+    border: none;
+    color: #F1FAEE;
+    font-family: inherit;
+    font-size: inherit;
+    border-radius: 0.4rem;
+}
+
+@media only screen and (max-width: 950px) {
+    .hero form {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .hero form > *:nth-child(2),
+    .hero form > *:nth-child(5),
+    .hero form > *:nth-child(6) {
+        grid-column: 1 / span 2;
+    }
+}

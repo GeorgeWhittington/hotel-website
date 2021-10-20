@@ -1,4 +1,30 @@
 {% extends "base.html" %}
 
 {% block title %}Home{% endblock %}
-{% block page_title %}Home{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+{% block content %}
+  <header class="hero">
+    <span>Find a room with us...</span>
+    <form method="POST" action="/">
+      {{ form.csrf_token }}
+      <select name="location" id="location">
+        <option value="" disabled selected>Select Location</option>
+        {% for option in form.location %}
+          {{ option }}
+        {% endfor %}
+      </select>
+      {{ form.booking_start }}
+      {{ form.booking_end }}
+      {{ form.guests }}
+      <input type="submit" value="Search">
+    </form>
+  </header>
+<div class="carousel">
+<!-- 
+Carousel with the 5 most booked locations (only maybe 3 showing at once?)
+-->
+</div>
+
+{% endblock %}
