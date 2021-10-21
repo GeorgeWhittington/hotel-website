@@ -1,3 +1,5 @@
+/* HERO */
+
 .hero {
     width: 100%;
     background-color: #A8DADC;
@@ -5,50 +7,152 @@
     border-radius: 0.4rem;
 }
 
-.hero span {
+.hero h1 {
     display: block;
     font-weight: 700;
-    margin: 1rem 0;
+    margin: 2rem 0;
     font-size: 2rem;
 }
 
 .hero form {
-    margin: 1rem 0;
+    margin: 2rem 0;
     display: grid;
     column-gap: 0.5rem;
     row-gap: 0.5rem;
-    /* grid-template-columns: repeat(5, 1fr); */
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 100px;
+}
+
+.hero form select,
+.hero form input[type="date"],
+.hero form input[type="number"],
+.hero form input[type="submit"] {
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    border-radius: 0.4rem;
+    padding: 0.5rem 0.25rem;
 }
 
 .hero form select,
 .hero form input[type="date"],
 .hero form input[type="number"] {
     background-color: #F1FAEE;
-    border: none;
     color: inherit;
-    font-family: inherit;
-    font-size: inherit;
-    border-radius: 0.4rem;
 }
 
 .hero form input[type="submit"] {
     background-color: #E63946;
-    border: none;
     color: #F1FAEE;
-    font-family: inherit;
-    font-size: inherit;
-    border-radius: 0.4rem;
 }
 
 @media only screen and (max-width: 950px) {
     .hero form {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .hero form > *:nth-child(2),
     .hero form > *:nth-child(5),
     .hero form > *:nth-child(6) {
         grid-column: 1 / span 2;
+    }
+}
+
+/* CAROUSEL */
+
+.locations-carousel {
+    background-color: #A8DADC;
+    border-radius: 0.4rem;
+    padding: 0 15px;
+    margin: 15px 0;
+    width: 100%;
+}
+
+.carousel {
+    display: flex;
+    align-items: center;
+}
+
+.carousel > *:not(:last-child) {
+    margin-right: 0.5rem;
+}
+
+.carousel-inner {
+    display: flex;
+    overflow-x: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    list-style: none;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+.carousel-inner::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-item {
+    width: 300px;
+    background-color: #F1FAEE;
+    border-radius: 0.4rem;
+}
+
+.carousel-item:not(:last-child) {
+    margin-right: 15px;
+}
+
+.carousel-item > * {
+    width: inherit;
+}
+
+.carousel-item img {
+    width: inherit;
+    object-fit: cover;
+    border-radius: 0.4rem 0.4rem 0 0;
+    transition: opacity 0.5s;
+}
+
+.carousel-item img:hover {
+    opacity: 0.5;
+}
+
+.carousel-item-text {
+    padding: 0 15px;
+}
+
+.carousel-item h5 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1D3557;
+    margin: 1rem 0;
+}
+
+.carousel-item a {
+    text-decoration: none;
+}
+
+.carousel-item a:hover {
+    text-decoration: underline;
+}
+
+.carousel-control {
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: none;
+}
+
+.carousel-control img {
+    width: 2.5rem;
+    display: block;
+    filter: invert(17%) sepia(9%) saturate(5375%) hue-rotate(180deg) brightness(90%) contrast(89%);
+}
+
+@media screen and (max-width: 768px) {
+    .carousel-item {
+        width: 200px;
+    }
+
+    .carousel-control img {
+        width: 1.5rem;
     }
 }

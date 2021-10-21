@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
   <header class="hero">
-    <span>Find a room with us...</span>
+    <h1>Find a room with us...</h1>
     <form method="POST" action="/">
       {{ form.csrf_token }}
       <select name="location" id="location">
@@ -21,10 +21,30 @@
       <input type="submit" value="Search">
     </form>
   </header>
-<div class="carousel">
-<!-- 
-Carousel with the 5 most booked locations (only maybe 3 showing at once?)
--->
+<div class="locations-carousel">
+  <h2>Our most popular locations</h2>
+  <div class="carousel">
+    <button class="carousel-control">
+      <img src="{{ url_for('static', filename='svgs/chevron-circle-left-solid.svg') }}" />
+    </button>
+    <ul class="carousel-inner">
+      {% for location in locations %}
+        <li class="carousel-item">
+          <a href="{{ url_for('hotels.home') }}"><img src="https://via.placeholder.com/500/444444.jpg"/></a>
+          <div class="carousel-item-text">
+            <a href="{{ url_for('hotels.home') }}"><h5>{{ location.name }}</h5></a>
+            <p>? rooms available</p>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+    <button class="carousel-control">
+      <img src="{{ url_for('static', filename='svgs/chevron-circle-right-solid.svg') }}" />
+    </button>
+  </div>
 </div>
 
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/carousel.js') }}"></script>
 {% endblock %}

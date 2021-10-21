@@ -21,7 +21,7 @@ def home():
     if request.method == "POST" and form.location.errors:
         flash("Please select a location from the list provided.")
 
-    return render_template("hotels/home.html", form=form)
+    return render_template("hotels/home.html", form=form, locations=locations)
 
 
 @bp.route("/search")

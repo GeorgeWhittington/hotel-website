@@ -116,6 +116,7 @@ nav .nav-button {
     position: relative;
     font-family: inherit;
     font-size: 1rem;
+    cursor: pointer;
 }
 
 /* hidden from view but *not* from screenreaders */

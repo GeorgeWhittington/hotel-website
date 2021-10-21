@@ -13,6 +13,8 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   -->
 
+  {% block styles %}{% endblock %}
+
   <!-- Fontawesome and googlefonts -->
   <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-  {% block styles %}{% endblock %}
+  
 
 </head>
 
@@ -72,6 +74,7 @@
     {% block content %}{% endblock %}
   </section>
 
+{% block scripts %}{% endblock %}
 <script src="{{ url_for('static', filename='js/nav-menu.js') }}"></script>
 </body>
 </html>
