@@ -26,6 +26,7 @@ class User(db.Model, UserMixin):
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
+    image = db.Column(db.String(1024), nullable=True)  # Long, for image paths
 
 
 class Currency(db.Model):

@@ -11,15 +11,15 @@ function scrollCarouselLeft() {
         if ((cardPosition.x + cardPosition.width) > carouselPosition.x) {
             // is the start of the card before the start of the carousel?
             if (cardPosition.x < carouselPosition.x) {
-                carousel.scroll(carouselItems[i].offsetLeft - carouselPosition.x, 0);
+                carouselItems[i].scrollIntoView();
                 return;
             } else {
                 // is there a card before it to make visible?
                 if (i - 1 < 0) {
-                    carousel.scroll(carouselItems[i].offsetLeft - carouselPosition.x, 0);
+                    carouselItems[i].scrollIntoView();
                     return;
                 } else {
-                    carousel.scroll(carouselItems[i - 1].offsetLeft - carouselPosition.x, 0);
+                    carouselItems[i - 1].scrollIntoView();
                     return;
                 }
             }
@@ -38,7 +38,7 @@ function scrollCarouselRight() {
             if (i + 1 > carouselItems.length) {
                 return;
             } else {
-                carousel.scroll(carouselItems[i + 1].offsetLeft - carouselPosition.x, 0);
+                carousel.scroll(carouselItems[i + 1].offsetLeft - Math.ceil(carouselPosition.x), 0);
                 return;
             }
         }
