@@ -18,10 +18,9 @@ def create_app():
         secret_key = data["secret_key"]
     
     app.config.from_mapping(
-        SECRET_KEY=secret_key,  # This should be a cryptographically secure generated value for prod
+        SECRET_KEY=secret_key,  # This should be a cryptographically secure generated value for production
         SQLALCHEMY_DATABASE_URI=db_uri,
-        SQLALCHEMY_TRACK_MODIFICATIONS=False
-    )
+        SQLALCHEMY_TRACK_MODIFICATIONS=False)
 
     from .models import db, User, Location, Currency, Hotel, Roomtype, Room, Booking
     db.init_app(app)
@@ -32,6 +31,7 @@ def create_app():
 
     auth.login_manager.init_app(app)
 
+    # Provide currency data to all templates during rendering
     @app.context_processor
     def utility_processor():
         currencies = Currency.query.all()

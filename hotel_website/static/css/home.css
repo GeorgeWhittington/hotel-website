@@ -105,7 +105,8 @@
 }
 
 .carousel-item img {
-    width: inherit;
+    width: 300px;
+    height: 300px;
     object-fit: cover;
     border-radius: 0.4rem 0.4rem 0 0;
     transition: opacity 0.5s;
@@ -150,6 +151,11 @@
 @media screen and (max-width: 768px) {
     .carousel-item {
         width: 200px;
+    }
+
+    .carousel-item img {
+        width: 200px;
+        height: 200px;
     }
 
     .carousel-control img {

@@ -22,7 +22,7 @@ def filldb():
     user = User(
         username="admin",
         password=generate_password_hash(
-            "password",  # in prod this should be actually secure 
+            "password",  # in production this should be actually secure 
             method="pbkdf2:sha256:150000",
             salt_length=16))
     db.session.add(user)

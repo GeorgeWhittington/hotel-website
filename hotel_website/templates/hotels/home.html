@@ -30,7 +30,7 @@
     <ul class="carousel-inner">
       {% for location in locations %}
         <li class="carousel-item">
-          <a href="{{ url_for('hotels.home') }}"><img src="https://via.placeholder.com/500/444444.jpg"/></a>
+          <a href="{{ url_for('hotels.home') }}"><img src="{{ url_for('static', filename=location.image) }}"/></a>
           <div class="carousel-item-text">
             <a href="{{ url_for('hotels.home') }}"><h5>{{ location.name }}</h5></a>
             <p>? rooms available</p>
