@@ -21,12 +21,18 @@ class User(db.Model, UserMixin):
             return user
 
         return None
+    
+    def __str__(self):
+        return self.username
 
 
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     image = db.Column(db.String(1024), nullable=True)  # Long, for image paths
+
+    def __str__(self):
+        return self.name
 
 
 class Currency(db.Model):
@@ -42,6 +48,8 @@ class Currency(db.Model):
     acronym = db.Column(db.String(3), unique=True, nullable=False)
     conversion_rate = db.Column(db.Numeric(precision=10, scale=2), nullable=False)
 
+    def __str__(self):
+        return self.full_name
 
 class Hotel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,11 +61,17 @@ class Hotel(db.Model):
     currency_id = db.Column(db.Integer, db.ForeignKey("currency.id"))
     currency = db.relationship("Currency", backref=db.backref("hotels", lazy=True))
 
+    def __str__(self):
+        return f"Hotel(id={self.id}, location={self.location})"
+
 
 class Roomtype(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     room_type = db.Column(db.String(1), unique=True, nullable=False)
     max_occupants = db.Column(db.Integer, nullable=False)
+
+    def __str__(self):
+        return self.room_type
 
 
 class Room(db.Model):
@@ -68,6 +82,8 @@ class Room(db.Model):
     room_type_id = db.Column(db.Integer, db.ForeignKey("roomtype.id"))
     room_type = db.relationship("Roomtype", backref=db.backref("rooms", lazy=True))
 
+    def __str__(self):
+        return f"Room(id={self.id}, hotel={self.hotel}, room_type={self.room_type})"
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)

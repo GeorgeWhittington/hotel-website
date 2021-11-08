@@ -140,6 +140,7 @@
     border: none;
     border-radius: 50%;
     background: none;
+    cursor: pointer;
 }
 
 .carousel-control img {
