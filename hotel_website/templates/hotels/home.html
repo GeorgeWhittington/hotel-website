@@ -35,7 +35,7 @@
           <a href="{{ url_for('hotels.home') }}"><img src="{{ url_for('static', filename=location.image) }}"/></a>
           <div class="carousel-item-text">
             <a href="{{ url_for('hotels.home') }}"><h5>{{ location.name }}</h5></a>
-            <p>? rooms available</p>
+            <p>{{ location.rooms_available(today, one_month) }} rooms available next month</p>
           </div>
         </li>
       {% endfor %}

@@ -27,15 +27,6 @@ class User(db.Model, UserMixin):
     def __str__(self):
         return self.username
 
-# TODO: Should I just merge the location and hotel tables?
-class Location(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    image = db.Column(db.String(1024), nullable=True)  # Long, for image paths
-
-    def __str__(self):
-        return self.name
-
 
 class Currency(db.Model):
     """Table for the currencies that the hotels accept.
@@ -53,18 +44,19 @@ class Currency(db.Model):
     def __str__(self):
         return self.full_name
 
-class Hotel(db.Model):
+
+class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    image = db.Column(db.String(1024), nullable=True)  # Long, for image paths
     peak_price = db.Column(db.Numeric(precision=10, scale=2), nullable=False)
     off_peak_price = db.Column(db.Numeric(precision=10, scale=2), nullable=False)
 
-    location_id = db.Column(db.Integer, db.ForeignKey("location.id"))
-    location = db.relationship("Location", backref=db.backref("hotels", lazy=True))
     currency_id = db.Column(db.Integer, db.ForeignKey("currency.id"))
     currency = db.relationship("Currency", backref=db.backref("hotels", lazy=True))
 
     def __str__(self):
-        return f"Hotel(id={self.id}, location={self.location})"
+        return self.name
 
 
 class Roomtype(db.Model):
@@ -79,13 +71,13 @@ class Roomtype(db.Model):
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-    hotel_id = db.Column(db.Integer, db.ForeignKey("hotel.id"))
-    hotel = db.relationship("Hotel", backref=db.backref("rooms", lazy=True))
+    location_id = db.Column(db.Integer, db.ForeignKey("location.id"))
+    location = db.relationship("Location", backref=db.backref("rooms", lazy=True))
     room_type_id = db.Column(db.Integer, db.ForeignKey("roomtype.id"))
     room_type = db.relationship("Roomtype", backref=db.backref("rooms", lazy=True))
 
     def __str__(self):
-        return f"Room(id={self.id}, hotel={self.hotel}, room_type={self.room_type})"
+        return f"Room(id={self.id}, location={self.location}, room_type={self.room_type})"
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -103,13 +95,17 @@ class Booking(db.Model):
 
 def rooms_available(self, start: date, end: date) -> int:
     # Logic for testing if there is any overlap of ranges comes from: https://stackoverflow.com/a/3269471
-    rooms = Room.query.join(Room.hotel).leftjoin(Room.bookings).where(
-        Hotel.id == self.id,
+    rooms = Room.query.join(Room.location).join(Room.bookings, isouter=True).where(
+        Location.id == self.id,
         or_(
-            Booking.id is None,
-            not_(and_(start <= Booking.booking_end, Booking.booking_start <= end)) # !(x1 <= y2 AND y1 <= x2)
+            Booking.id == None,
+            not_(and_(
+                start <= Booking.booking_end,
+                Booking.booking_start <= end
+            )) # !(x1 <= y2 AND y1 <= x2)
         )
-    ).all()
+    ).count()
+    return rooms
 
 
-Hotel.rooms_available = rooms_available
+Location.rooms_available = rooms_available

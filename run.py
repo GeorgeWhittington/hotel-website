@@ -16,7 +16,7 @@ def createdb():
 # Run the sql in there before running this
 @app.cli.command()
 def filldb():
-    from hotel_website.models import User, Roomtype, Room, Hotel, Location
+    from hotel_website.models import User, Roomtype, Room, Location
 
     # Create admin user
     user = User(
@@ -24,7 +24,9 @@ def filldb():
         password=generate_password_hash(
             "password",  # in production this should be actually secure 
             method="pbkdf2:sha256:150000",
-            salt_length=16))
+            salt_length=16),
+        admin=True)
+
     db.session.add(user)
 
     # Add all rooms
@@ -60,11 +62,11 @@ def filldb():
             room_type: int(percent * rooms)
             for room_type, percent in room_types.items()}
 
-        hotel = Hotel.query.join(Hotel.location).where(Location.name == city).first()
+        location = Location.query.filter_by(name=city).first()
 
         for room_type in calculated_room_types.keys():
             for _ in range(calculated_room_types[room_type]):
-                room = Room(hotel=hotel, room_type=room_type_lookup[room_type])
+                room = Room(location=location, room_type=room_type_lookup[room_type])
                 db.session.add(room)
 
     db.session.commit()

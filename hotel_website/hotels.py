@@ -1,9 +1,9 @@
-from datetime import date
+from datetime import date, timedelta
 
 from sqlalchemy import or_, and_, not_
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 
-from .models import Location, Hotel, Booking, Room, Roomtype
+from .models import Location, Booking, Room, Roomtype
 from .forms import WhereToForm
 
 bp = Blueprint("hotels", __name__)
@@ -15,7 +15,10 @@ def home():
     locations = Location.query.order_by(Location.name).all()
     form.location.choices = [(l.id, l.name) for l in locations]
 
-    return render_template("hotels/home.html", form=form, locations=locations)
+    today = date.today()
+    one_month = today + timedelta(days=30)
+
+    return render_template("hotels/home.html", form=form, locations=locations, today=today, one_month=one_month)
 
 
 @bp.route("/search")
@@ -51,8 +54,8 @@ def search():
         form.guests.data = guests
 
     # Logic for testing if there is any overlap of ranges comes from: https://stackoverflow.com/a/3269471
-    results = Room.query.with_entities(Hotel.location_id, Room.room_type_id)
-    results = results.join(Room.hotel).join(Room.room_type).join(Room.bookings, isouter=True)
+    results = Room.query.with_entities(Location.id, Roomtype.id)
+    results = results.join(Room.location).join(Room.room_type).join(Room.bookings, isouter=True)
     results = results.where(
         Roomtype.max_occupants >= guests,
         or_(
@@ -62,10 +65,10 @@ def search():
                 Booking.booking_start <= booking_end    
             )) # !(x1 <= y2 AND y1 <= x2)
         )
-    ).group_by(Roomtype.id, Hotel.id)
+    ).group_by(Roomtype.id, Location.id)
 
     if location:
-        results = results.where(Hotel.location.has(id=location))
+        results = results.where(Location.id == location)
 
     results = results.all()
 
