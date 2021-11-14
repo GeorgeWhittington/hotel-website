@@ -2,7 +2,7 @@
 
 .hero {
     width: 100%;
-    background-color: #A8DADC;
+    background-color: var(--content-bg-colour);
     padding: 0 15px;
     border-radius: 0.4rem;
 }
@@ -36,13 +36,13 @@
 .hero form select,
 .hero form input[type="date"],
 .hero form input[type="number"] {
-    background-color: #F1FAEE;
+    background-color: var(--bg-colour);
     color: inherit;
 }
 
 .hero form input[type="submit"] {
-    background-color: #E63946;
-    color: #F1FAEE;
+    background-color: var(--contrast-colour);
+    color: var(--bg-colour)
 }
 
 @media only screen and (max-width: 950px) {
@@ -60,7 +60,7 @@
 /* CAROUSEL */
 
 .locations-carousel {
-    background-color: #A8DADC;
+    background-color: var(--content-bg-colour);
     border-radius: 0.4rem;
     padding: 0 15px;
     margin: 15px 0;
@@ -92,7 +92,7 @@
 
 .carousel-item {
     width: 300px;
-    background-color: #F1FAEE;
+    background-color: var(--bg-colour);
     border-radius: 0.4rem;
 }
 
@@ -123,8 +123,12 @@
 .carousel-item h5 {
     font-size: 1rem;
     font-weight: 700;
-    color: #1D3557;
+    color: var(--text-colour);
     margin: 1rem 0;
+}
+
+.carousel-item a {
+    color: var(--text-colour);
 }
 
 .carousel-item a {
@@ -146,6 +150,7 @@
 .carousel-control img {
     width: 2.5rem;
     display: block;
+    /* Modifies colour of svg using css rules */
     filter: invert(17%) sepia(9%) saturate(5375%) hue-rotate(180deg) brightness(90%) contrast(89%);
 }
 

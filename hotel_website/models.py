@@ -1,5 +1,7 @@
 from typing import Optional
+from datetime import date
 
+from sqlalchemy import or_, and_, not_
 from sqlalchemy.sql import expression, func
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
@@ -25,7 +27,7 @@ class User(db.Model, UserMixin):
     def __str__(self):
         return self.username
 
-
+# TODO: Should I just merge the location and hotel tables?
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
@@ -97,3 +99,17 @@ class Booking(db.Model):
     room = db.relationship("Room", backref=db.backref("bookings", lazy=True))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", backref=db.backref("bookings", lazy=True))
+
+
+def rooms_available(self, start: date, end: date) -> int:
+    # Logic for testing if there is any overlap of ranges comes from: https://stackoverflow.com/a/3269471
+    rooms = Room.query.join(Room.hotel).leftjoin(Room.bookings).where(
+        Hotel.id == self.id,
+        or_(
+            Booking.id is None,
+            not_(and_(start <= Booking.booking_end, Booking.booking_start <= end)) # !(x1 <= y2 AND y1 <= x2)
+        )
+    ).all()
+
+
+Hotel.rooms_available = rooms_available

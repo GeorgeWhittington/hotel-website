@@ -31,7 +31,7 @@ def create_app():
     app.register_blueprint(hotels.bp)
 
     auth.login_manager.init_app(app)
-    admin.admin.init_app(app)  # I think admin's blueprints get registered here too
+    admin.admin.init_app(app)  # Admin's views get registered here
 
     # Provide currency data to all templates during rendering
     @app.context_processor

@@ -61,7 +61,7 @@ def filldb():
             for room_type, percent in room_types.items()}
 
         hotel = Hotel.query.join(Hotel.location).where(Location.name == city).first()
-        
+
         for room_type in calculated_room_types.keys():
             for _ in range(calculated_room_types[room_type]):
                 room = Room(hotel=hotel, room_type=room_type_lookup[room_type])

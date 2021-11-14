@@ -1,0 +1,15 @@
+.search-content {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+    gap: 15px;
+}
+
+.filter {
+    background-color: var(--content-bg-colour);
+    padding: 0 15px;
+    border-radius: 0.4rem;
+}
+
+.results {
+}

@@ -1,26 +1,28 @@
 {% extends "base.html" %}
 
 {% block title %}Home{% endblock %}
+
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 {% endblock %}
+
 {% block content %}
-  <header class="hero">
-    <h1>Find a room with us...</h1>
-    <form method="POST" action="/">
-      {{ form.csrf_token }}
-      <select name="location" id="location">
-        <option value="" disabled selected>Select Location</option>
-        {% for option in form.location %}
-          {{ option }}
-        {% endfor %}
-      </select>
-      {{ form.booking_start }}
-      {{ form.booking_end }}
-      {{ form.guests }}
-      <input type="submit" value="Search">
-    </form>
-  </header>
+<header class="hero">
+  <h1>Find a room with us...</h1>
+  <form method="POST" action="{{ url_for('hotels.search_submit') }}">
+    {{ form.csrf_token }}
+    <select name="location" id="location">
+      <option value="" disabled selected>Select Location</option>
+      {% for option in form.location %}
+        {{ option }}
+      {% endfor %}
+    </select>
+    {{ form.booking_start }}
+    {{ form.booking_end }}
+    {{ form.guests }}
+    <input type="submit" value="Search">
+  </form>
+</header>
 <div class="locations-carousel">
   <h2>Our most popular locations</h2>
   <div class="carousel">
@@ -43,8 +45,8 @@
     </button>
   </div>
 </div>
-
 {% endblock %}
+
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/carousel.js') }}"></script>
 {% endblock %}

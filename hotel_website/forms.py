@@ -13,10 +13,9 @@ class UsernamePasswordForm(FlaskForm):
 
 class WhereToForm(FlaskForm):
     location = SelectField("Location", coerce=int, validators=[InputRequired()])
-    # write a custom validator for these? need something that'll stick a clientside min on atleast
     booking_start = DateField("Booking start", validators=[InputRequired()])
     booking_end = DateField("Booking end", format="%Y-%m-%d", validators=[InputRequired()])
-    guests = IntegerField("Number of guests", render_kw={"placeholder": "Number of guests"}, validators=[InputRequired(), NumberRange(min=1)])
+    guests = IntegerField("Number of guests", render_kw={"placeholder": "Number of guests"}, validators=[InputRequired(), NumberRange(min=1, max=6)])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

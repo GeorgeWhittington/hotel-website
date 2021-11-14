@@ -10,7 +10,6 @@ admin = Admin(template_mode="bootstrap3")
 
 class CustomModelView(ModelView):
     def is_accessible(self):
-        print(f"{flask_login.current_user.is_authenticated} {type(flask_login.current_user)}")
         return flask_login.current_user.is_authenticated and flask_login.current_user.admin
 
     def inaccessible_callback(self, name, **kwargs):
