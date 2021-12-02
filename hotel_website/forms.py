@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField, DateField
+from wtforms import StringField, PasswordField, SelectField
 from wtforms_components import DateField, IntegerField, DateRange
 from wtforms.validators import InputRequired, Length, NumberRange
 
@@ -15,7 +15,9 @@ class WhereToForm(FlaskForm):
     location = SelectField("Location", coerce=int, validators=[InputRequired()])
     booking_start = DateField("Booking start", validators=[InputRequired()])
     booking_end = DateField("Booking end", format="%Y-%m-%d", validators=[InputRequired()])
-    guests = IntegerField("Number of guests", render_kw={"placeholder": "Number of guests"}, validators=[InputRequired(), NumberRange(min=1, max=6)])
+    guests = IntegerField(
+        "Number of guests", render_kw={"placeholder": "Number of guests"},
+        validators=[InputRequired(), NumberRange(min=1, max=6)])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,7 +25,7 @@ class WhereToForm(FlaskForm):
         # Add validators and defaults on form creation so dates are correct
         today = date.today()
         tomorrow = today + timedelta(days=1)
-        
+
         self.booking_start.validators += [DateRange(min=today)]
         self.booking_end.validators += [DateRange(min=tomorrow)]
 

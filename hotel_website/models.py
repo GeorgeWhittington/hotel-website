@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
             return user
 
         return None
-    
+
     def __str__(self):
         return self.username
 
@@ -79,6 +79,7 @@ class Room(db.Model):
     def __str__(self):
         return f"Room(id={self.id}, location={self.location}, room_type={self.room_type})"
 
+
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     guests = db.Column(db.Integer, nullable=False)
@@ -102,7 +103,7 @@ def rooms_available(self, start: date, end: date) -> int:
             not_(and_(
                 start <= Booking.booking_end,
                 Booking.booking_start <= end
-            )) # !(x1 <= y2 AND y1 <= x2)
+            ))  # !(x1 <= y2 AND y1 <= x2)
         )
     ).count()
     return rooms

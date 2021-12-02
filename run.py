@@ -6,6 +6,7 @@ from hotel_website.models import db
 
 app = create_app()
 
+
 @app.cli.command()
 def createdb():
     db.create_all()
@@ -22,7 +23,7 @@ def filldb():
     user = User(
         username="admin",
         password=generate_password_hash(
-            "password",  # in production this should be actually secure 
+            "password",  # in production this should be actually secure
             method="pbkdf2:sha256:150000",
             salt_length=16),
         admin=True)
@@ -70,6 +71,7 @@ def filldb():
                 db.session.add(room)
 
     db.session.commit()
+    click.echo("Populated db with admin user and rooms.")
 
 
 if __name__ == "__main__":

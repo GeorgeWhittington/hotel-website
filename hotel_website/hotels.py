@@ -18,7 +18,9 @@ def home():
     today = date.today()
     one_month = today + timedelta(days=30)
 
-    return render_template("hotels/home.html", form=form, locations=locations, today=today, one_month=one_month)
+    return render_template(
+        "hotels/home.html", form=form, locations=locations,
+        today=today, one_month=one_month)
 
 
 @bp.route("/search")
@@ -62,8 +64,8 @@ def search():
             Booking.id == None,
             not_(and_(
                 booking_start <= Booking.booking_end,
-                Booking.booking_start <= booking_end    
-            )) # !(x1 <= y2 AND y1 <= x2)
+                Booking.booking_start <= booking_end
+            ))  # !(x1 <= y2 AND y1 <= x2)
         )
     ).group_by(Roomtype.id, Location.id)
 
@@ -75,11 +77,12 @@ def search():
     locations = {l.id: l for l in locations}
     room_types = {rt.id: rt for rt in Roomtype.query.all()}
 
-    results = [(locations[l_id], room_types[rt_id])  for l_id, rt_id in results]
+    results = [(locations[l_id], room_types[rt_id]) for l_id, rt_id in results]
 
-    return render_template("hotels/search.html",
-        form=form, results=results,
+    return render_template(
+        "hotels/search.html", form=form, results=results,
         room_types={"S": "Standard", "D": "Double", "F": "Family"})
+
 
 @bp.route("/search_submit", methods=["POST"])
 def search_submit():
@@ -99,10 +102,10 @@ def search_submit():
                 "guests": form.guests.data
             }
             return redirect(url_for("hotels.search", **form_data))
-    
+
     if form.location.errors:
         flash("Please select a location from the list provided.")
-    
+
     referrer = request.referrer[8:]  # Cut off http/https prefix
     referrer_path = referrer[referrer.find("/"):]  # Slice by first / for the path
 
