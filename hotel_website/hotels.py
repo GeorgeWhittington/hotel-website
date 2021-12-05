@@ -1,26 +1,12 @@
 from datetime import date, timedelta
+import calendar
 
 from sqlalchemy import or_, and_, not_
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 
-from .models import Location, Booking, Room, Roomtype
+from .models import Location, Booking, Room, Roomtype, Currency
 from .forms import WhereToForm
-
-bp = Blueprint("hotels", __name__)
-
-
-@bp.route("/")
-def home():
-    form = WhereToForm()
-    locations = Location.query.order_by(Location.name).all()
-    form.location.choices = [(l.id, l.name) for l in locations]
-
-    today = date.today()
-    one_month = today + timedelta(days=30)
-
-    return render_template(
-        "hotels/home.html", form=form, locations=locations,
-        today=today, one_month=one_month)
+from .constants import MAX_GUESTS, CURRENCY_SYMBOLS
 
 
 def test_booking_duration(booking_start, booking_end):
@@ -35,9 +21,31 @@ def test_booking_duration(booking_start, booking_end):
 
 
 def test_guests(guests):
-    """If the number of guests in invalid, returns True"""
-    # Extract these values to a constants file?
-    return guests < 1 or guests > 6
+    """If the number of guests is invalid, returns True"""
+    return guests < 1 or guests > MAX_GUESTS
+
+
+bp = Blueprint("hotels", __name__)
+
+
+@bp.route("/")
+def home():
+    form = WhereToForm()
+    locations = Location.query.order_by(Location.name).all()
+    form.location.choices = [(l.id, l.name) for l in locations]
+
+    today = date.today()
+    next_week = today + timedelta(days=7)
+
+    next_month = today.replace(day=1) + timedelta(days=32)
+    last_day = calendar.monthrange(next_month.year, next_month.month)[1]
+    start_date = date(next_month.year, next_month.month, 1)
+    end_date = date(next_month.year, next_month.month, last_day)
+
+    return render_template(
+        "hotels/home.html", form=form, locations=locations,
+        start_date=start_date, end_date=end_date,
+        today=today.isoformat(), next_week=next_week.isoformat())
 
 
 @bp.route("/search")
@@ -120,10 +128,24 @@ def search():
     locations = {l.id: l for l in locations}
     room_types = {rt.id: rt for rt in Roomtype.query.all()}
 
-    results = [(locations[l_id], room_types[rt_id]) for l_id, rt_id in results]
+    rooms = []
+    for l_id, rt_id in results:
+        location = locations[l_id]
+        room_type = room_types[rt_id]
+
+        currency_acronym = request.cookies.get("current_currency", default="GBP")
+        currency = Currency.query.filter_by(acronym=currency_acronym).first()
+
+        symbol = CURRENCY_SYMBOLS[currency_acronym]
+
+        price, discount_price = location.find_room_prices(
+            room_type=room_type, booking_start=booking_start,
+            booking_end=booking_end, currency=currency, guests=guests)
+
+        rooms.append((location, room_type, price, discount_price, symbol))
 
     return render_template(
-        "hotels/search.html", form=form, results=results,
+        "hotels/search.html", form=form, results=rooms,
         room_types={"S": "Standard", "D": "Double", "F": "Family"})
 
 

@@ -32,10 +32,14 @@
     <ul class="carousel-inner">
       {% for location in locations %}
         <li class="carousel-item">
-          <a href="{{ url_for('hotels.home') }}"><img src="{{ url_for('static', filename=location.image) }}"/></a>
+          <a href="{{ url_for('hotels.search', location=location.id, booking_start=today, booking_end=next_week, guests=1) }}">
+            <img src="{{ url_for('static', filename=location.image) }}"/>
+          </a>
           <div class="carousel-item-text">
-            <a href="{{ url_for('hotels.home') }}"><h5>{{ location.name }}</h5></a>
-            <p>{{ location.rooms_available(today, one_month) }} rooms available next month</p>
+            <a href="{{ url_for('hotels.search', location=location.id, booking_start=today, booking_end=next_week, guests=1) }}">
+              <h5>{{ location.name }}</h5>
+            </a>
+            <p>{{ location.rooms_available(start_date, end_date) }} rooms available next month</p>
           </div>
         </li>
       {% endfor %}

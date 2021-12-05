@@ -27,7 +27,7 @@
     </div>
   </div>
   <div class="results">
-    {% for location, room_type in results %}
+    {% for location, room_type, price, discount_price, symbol in results %}
       <div class="hotel-room">
         <img src="{{ url_for('static', filename=location.image) }}" />
         <div class="hotel-room-inner">
@@ -36,8 +36,12 @@
             <p>{{ room_types.get(room_type.room_type) }} Room | Max Occupants: {{ room_type.max_occupants }}</p>
           </div>
           <div class="hotel-room-booking">
-            <p>£400</p>
-            <p class="hotel-room-button"><a href="{{ url_for('hotels.room') }}">Book Now</a></p>
+            {% if discount_price is none %}
+              <p>{{ symbol }}{{ "{:.2f}".format(price) }}</p>
+            {% else %}
+              <p><strike>{{ symbol }}{{ "{:.2f}".format(price) }}</strike> {{ symbol }}{{ "{:.2f}".format(discount_price) }}</p>
+            {% endif %}
+            <p class="hotel-room-button"><a href="{{ url_for('hotels.room', location=location.id, room_type=room_type.id) }}">Book Now</a></p>
           </div>
         </div>
       </div>

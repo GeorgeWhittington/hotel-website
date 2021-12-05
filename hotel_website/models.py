@@ -1,10 +1,13 @@
-from typing import Optional
-from datetime import date
+from typing import Union, Type, Tuple
+from datetime import date, timedelta
+import calendar
 
 from sqlalchemy import or_, and_, not_
 from sqlalchemy.sql import expression, func
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+
+from .constants import PEAK_PRICING, SINGLE_ROOM, DOUBLE_ROOM_ONE_GUEST, DOUBLE_ROOM_TWO_GUESTS, FAMILY_ROOM
 
 db = SQLAlchemy()
 
@@ -16,7 +19,7 @@ class User(db.Model, UserMixin):
     admin = db.Column(db.Boolean, server_default=expression.false(), nullable=False)
 
     @staticmethod
-    def get(user_id: str) -> Optional["User"]:
+    def get(user_id: str) -> Union["User", None]:
         user = User.query.get(user_id)
 
         if user:
@@ -58,6 +61,73 @@ class Location(db.Model):
     def __str__(self):
         return self.name
 
+    def find_room_prices(
+            self: Type["Location"],
+            room_type: Type["Roomtype"],
+            booking_start: date,
+            booking_end: date,
+            currency: Currency,
+            guests: int) -> Tuple[float, Union[float, None]]:
+        """Calculates the normal and discounted price of a room at a location.
+        The price returned is in the currency supplied.
+        """
+        # Finding number of days that are part of the duration in each month
+        # adapted from: https://stackoverflow.com/a/45816728
+        current = booking_start
+        months = [current]
+
+        # Find each month that is part of the duration
+        current = current.replace(day=1)
+        while current <= booking_end:
+            current += timedelta(days=32)
+            current = current.replace(day=1)
+            months.append(date(current.year, current.month, 1))
+
+        # Find days within duration for each month
+        durations = []
+        for i, month in enumerate(months[:-1]):
+            # check on first iteration if the start and end are in the same month,
+            # need to calculate N.O. days differently in that case
+            if (i == 0 and
+                    booking_start.year == booking_end.year and
+                    booking_start.month == booking_end.month):
+                # Duration inclusive of start day, so + 1
+                durations.append((month.month, booking_end.day - booking_start.day + 1))
+                continue
+
+            if month.month == booking_end.month and month.year == booking_end.year:
+                durations.append((booking_end.month, booking_end.day))
+            else:
+                month_range = calendar.monthrange(month.year, month.month)[1]
+                duration = (month_range - month.day) + 1  # Duration inclusive of start day, so + 1
+                durations.append((month.month, duration))
+
+        room_multiplier = SINGLE_ROOM
+        if room_type.room_type == "D":
+            room_multiplier = DOUBLE_ROOM_ONE_GUEST if guests == 1 else DOUBLE_ROOM_TWO_GUESTS
+        if room_type.room_type == "F":
+            room_multiplier = FAMILY_ROOM
+
+        total_price = 0.0
+        for month, days in durations:
+            base_price = self.peak_price if PEAK_PRICING[month] else self.off_peak_price
+            total_price += float(base_price) * room_multiplier * days
+
+        if currency != self.currency:
+            total_price *= float(currency.conversion_rate)
+
+        days_in_advance = (booking_start - date.today()).days
+        if days_in_advance >= 80:
+            discount_price = total_price * 0.80
+        elif days_in_advance >= 60:
+            discount_price = total_price * 0.90
+        elif days_in_advance >= 45:
+            discount_price = total_price * 0.95
+        else:
+            discount_price = None
+
+        return total_price, discount_price
+
 
 class Roomtype(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -95,7 +165,7 @@ class Booking(db.Model):
 
 
 def rooms_available(self, start: date, end: date) -> int:
-    # Logic for testing if there is any overlap of ranges comes from: https://stackoverflow.com/a/3269471
+    # Logic for testing if there is any overlap of ranges from: https://stackoverflow.com/a/3269471
     rooms = Room.query.join(Room.location).join(Room.bookings, isouter=True).where(
         Location.id == self.id,
         or_(

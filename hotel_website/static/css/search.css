@@ -122,6 +122,10 @@
     text-decoration: none;
 }
 
+.hotel-room strike {
+    color: var(--contrast-colour);
+}
+
 @media only screen and (max-width: 650px) {
     .hotel-room {
         flex-direction: column;
