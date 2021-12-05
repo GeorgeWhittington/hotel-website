@@ -164,19 +164,27 @@ class Booking(db.Model):
     user = db.relationship("User", backref=db.backref("bookings", lazy=True))
 
 
-def rooms_available(self, start: date, end: date) -> int:
-    # Logic for testing if there is any overlap of ranges from: https://stackoverflow.com/a/3269471
-    rooms = Room.query.join(Room.location).join(Room.bookings, isouter=True).where(
-        Location.id == self.id,
-        or_(
-            Booking.id == None,
-            not_(and_(
-                start <= Booking.booking_end,
-                Booking.booking_start <= end
-            ))  # !(x1 <= y2 AND y1 <= x2)
-        )
-    ).count()
-    return rooms
+def rooms_available(self, start: date, end: date, **kwargs) -> int:
+    """Finds the number of rooms available at a location during a time period
 
+    Keyword Arguments:
+        room_types: A tuple of Roomtype objects, by default all room types are selected
+    """
+
+    room_types = kwargs.get("room_types", (1, 2, 3))
+    if isinstance(room_types[0], Roomtype):
+        room_types = (rt.id for rt in room_types)
+
+    # Logic for testing if there is any overlap of ranges from: https://stackoverflow.com/a/3269471
+    rooms = Room.query.join(Room.location).where(Location.id == self.id).count()
+
+    rooms_occupied = Room.query.join(Room.location).join(Room.room_type).join(Room.bookings, isouter=True).where(
+        Roomtype.id.in_(room_types),
+        Location.id == self.id,
+        Booking.id != None,
+        start <= Booking.booking_end,
+        Booking.booking_start <= end
+    ).count()
+    return rooms - rooms_occupied
 
 Location.rooms_available = rooms_available

@@ -146,7 +146,8 @@ def search():
 
     return render_template(
         "hotels/search.html", form=form, results=rooms,
-        room_types={"S": "Standard", "D": "Double", "F": "Family"})
+        room_types={"S": "Standard", "D": "Double", "F": "Family"},
+        booking_start=booking_start, booking_end=booking_end)
 
 
 @bp.route("/search_submit", methods=["POST"])

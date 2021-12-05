@@ -104,6 +104,10 @@
     font-size: 1rem;
 }
 
+.hotel-room-info > * {
+    margin: 0;
+}
+
 .hotel-room-inner > * {
     display: flex;
     flex-direction: column;
@@ -146,6 +150,7 @@
     }
 
     .hotel-room-button {
+        text-align: center;
         margin-block-start: 1em !important;
         margin-block-end: 1em !important;
     }

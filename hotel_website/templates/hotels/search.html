@@ -33,7 +33,9 @@
         <div class="hotel-room-inner">
           <div class="hotel-room-info">
             <h3>{{ location.name }}</h3>
-            <p>{{ room_types.get(room_type.room_type) }} Room | Max Occupants: {{ room_type.max_occupants }}</p>
+            <p>{{ room_types.get(room_type.room_type) }} Room</p>
+            <p>Max Occupants: {{ room_type.max_occupants }}</p>
+            <p>{{ location.rooms_available(booking_start, booking_end, room_types=(room_type,)) }} Rooms available in that period</p>
           </div>
           <div class="hotel-room-booking">
             {% if discount_price is none %}
