@@ -115,3 +115,8 @@ def search_submit():
     }
 
     return redirect(url_for(lookup.get(referrer_path, "hotels.home")))
+
+
+@bp.route("/room")
+def room():
+    pass

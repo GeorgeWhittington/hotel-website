@@ -8,29 +8,38 @@
 
 {% block content %}
 <div class="search-content">
-  <div class="filter">
-    <h2>Filter</h2>
-    <form method="POST" action="{{ url_for('hotels.search_submit') }}">
-      {{ form.csrf_token }}
-      <select name="location" id="location">
-        <option value="" disabled selected>Select Location</option>
-        {% for option in form.location %}
-          {{ option }}
-        {% endfor %}
-      </select>
-      {{ form.booking_start }}
-      {{ form.booking_end }}
-      {{ form.guests }}
-      <input type="submit" value="Search">
-    </form>
+  <div class="filter-wrapper">
+    <div class="filter">
+      <h2>Filter</h2>
+      <form method="POST" action="{{ url_for('hotels.search_submit') }}">
+        {{ form.csrf_token }}
+        <select name="location" id="location">
+          <option value="" disabled selected>Select Location</option>
+          {% for option in form.location %}
+            {{ option }}
+          {% endfor %}
+        </select>
+        {{ form.booking_start }}
+        {{ form.booking_end }}
+        {{ form.guests }}
+        <input type="submit" value="Search">
+      </form>
+    </div>
   </div>
   <div class="results">
     {% for location, room_type in results %}
       <div class="hotel-room">
         <img src="{{ url_for('static', filename=location.image) }}" />
-        <h2>{{ location.name }}</h2>
-        <p>{{ room_types.get(room_type.room_type) }} Room | Max Occupants: {{ room_type.max_occupants }}</p>
-        <p>£400</p>
+        <div class="hotel-room-inner">
+          <div class="hotel-room-info">
+            <h3>{{ location.name }}</h3>
+            <p>{{ room_types.get(room_type.room_type) }} Room | Max Occupants: {{ room_type.max_occupants }}</p>
+          </div>
+          <div class="hotel-room-booking">
+            <p>£400</p>
+            <p class="hotel-room-button"><a href="{{ url_for('hotels.room') }}">Book Now</a></p>
+          </div>
+        </div>
       </div>
     {% endfor %}
   </div>

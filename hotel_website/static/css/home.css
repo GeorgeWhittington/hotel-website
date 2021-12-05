@@ -42,7 +42,8 @@
 
 .hero form input[type="submit"] {
     background-color: var(--contrast-colour);
-    color: var(--bg-colour)
+    color: var(--bg-colour);
+    cursor: pointer;
 }
 
 @media only screen and (max-width: 950px) {
