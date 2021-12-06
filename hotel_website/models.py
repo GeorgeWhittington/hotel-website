@@ -2,7 +2,6 @@ from typing import Union, Type, Tuple
 from datetime import date, timedelta
 import calendar
 
-from sqlalchemy import or_, and_, not_
 from sqlalchemy.sql import expression, func
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
@@ -170,7 +169,6 @@ def rooms_available(self, start: date, end: date, **kwargs) -> int:
     Keyword Arguments:
         room_types: A tuple of Roomtype objects, by default all room types are selected
     """
-
     room_types = kwargs.get("room_types", (1, 2, 3))
     if isinstance(room_types[0], Roomtype):
         room_types = (rt.id for rt in room_types)
@@ -186,5 +184,6 @@ def rooms_available(self, start: date, end: date, **kwargs) -> int:
         Booking.booking_start <= end
     ).count()
     return rooms - rooms_occupied
+
 
 Location.rooms_available = rooms_available

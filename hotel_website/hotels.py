@@ -1,10 +1,10 @@
 from datetime import date, timedelta
 import calendar
 
-from sqlalchemy import or_, and_, not_
+from sqlalchemy import or_, and_, not_, func, text
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 
-from .models import Location, Booking, Room, Roomtype, Currency
+from .models import db, Location, Booking, Room, Roomtype, Currency
 from .forms import WhereToForm
 from .constants import MAX_GUESTS, CURRENCY_SYMBOLS
 
@@ -42,8 +42,14 @@ def home():
     start_date = date(next_month.year, next_month.month, 1)
     end_date = date(next_month.year, next_month.month, last_day)
 
+    top_5 = db.session.query(Location, func.count(Booking.id).label("total_bookings"))
+    top_5 = top_5.join(Location.rooms).outerjoin(Room.bookings)
+    top_5 = top_5.group_by(Location).order_by(text("total_bookings DESC"))
+    top_5 = top_5.order_by(Location.name).limit(5).all()
+    top_5 = [location for location, _ in top_5]
+
     return render_template(
-        "hotels/home.html", form=form, locations=locations,
+        "hotels/home.html", form=form, locations=top_5,
         start_date=start_date, end_date=end_date,
         today=today.isoformat(), next_week=next_week.isoformat())
 
