@@ -43,7 +43,7 @@
             {% else %}
               <p><strike>{{ symbol }}{{ "{:.2f}".format(price) }}</strike> {{ symbol }}{{ "{:.2f}".format(discount_price) }}</p>
             {% endif %}
-            <p class="hotel-room-button"><a href="{{ url_for('hotels.room', location=location.id, room_type=room_type.id) }}">Book Now</a></p>
+            <p class="hotel-room-button"><a href="{{ url_for('hotels.room', location=location.id, room_type=room_type.id, booking_start=booking_start, booking_end=booking_end) }}">Book Now</a></p>
           </div>
         </div>
       </div>

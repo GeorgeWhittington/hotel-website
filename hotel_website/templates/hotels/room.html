@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}{{ room_types[room_type.room_type] }} Room in {{ location.name }}{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+{% for room in rooms %}
+  {{ room }}
+{% endfor %}
+
+<form method="POST" action="#">
+  {{ form.csrf_token }}
+  {{ form.room }}
+  <h1>Personal Information</h1>
+  {{ form.full_name }}
+  {{ form.email }}
+  <h1>Address</h1>
+  {{ form.address.address_1 }}
+  {{ form.address.address_2 }}
+  {{ form.address.postcode }}
+  <select name="address-country" id="address-country" required>
+    <option value="" disabled selected>Select Country</option>
+    {% for option in form.address.country %}
+      {{ option }}
+    {% endfor %}
+  </select>
+  <h1>Card Details</h1>
+  {{ form.card_details.card_type }}
+  {{ form.card_details.card_number }}
+  {{ form.card_details.cardholder_name }}
+  {{ form.card_details.security_code }}
+  {{ form.card_details.expiry_date.expiry_month }}
+  {{ form.card_details.expiry_date.expiry_year }}
+  {{ form.card_details.which_address }}
+  <h1>Second Address</h1>
+  {{ form.card_details.second_address.address_1 }}
+  {{ form.card_details.second_address.address_2 }}
+  {{ form.card_details.second_address.postcode }}
+  <select name="card_details-second_address-country" id="card_details-second_address-country" required>
+    <option value="" disabled selected>Select Country</option>
+    {% for option in form.card_details.second_address.country %}
+      {{ option }}
+    {% endfor %}
+  </select>
+  <input type="submit" value="Book">
+</form>
+{% endblock %}

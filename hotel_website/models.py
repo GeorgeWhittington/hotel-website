@@ -138,6 +138,8 @@ class Roomtype(db.Model):
 
 
 class Room(db.Model):
+    # TODO: make the pk a combination of location_id and room_type_id?
+    # Would have to change some queries, but it'd probably be neater
     id = db.Column(db.Integer, primary_key=True)
 
     location_id = db.Column(db.Integer, db.ForeignKey("location.id"))

@@ -3,10 +3,11 @@ import calendar
 
 from sqlalchemy import or_, and_, not_, func, text
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
+from flask_login import login_required
 
 from .models import db, Location, Booking, Room, Roomtype, Currency
-from .forms import WhereToForm
-from .constants import MAX_GUESTS, CURRENCY_SYMBOLS
+from .forms import WhereToForm, BookingForm
+from .constants import MAX_GUESTS, CURRENCY_SYMBOLS, ROOM_TYPES
 
 
 def test_booking_duration(booking_start, booking_end):
@@ -112,7 +113,8 @@ def search():
         session["booking_end"] = booking_end.isoformat()
         session["guests"] = guests
 
-    # Logic for testing if there is any overlap of ranges comes from: https://stackoverflow.com/a/3269471
+    # Logic for testing if there is any overlap of ranges comes from:
+    # https://stackoverflow.com/a/3269471
     results = Room.query.with_entities(Location.id, Roomtype.id)
     results = results.join(Room.location).join(Room.room_type).join(Room.bookings, isouter=True)
     results = results.where(
@@ -151,8 +153,7 @@ def search():
         rooms.append((location, room_type, price, discount_price, symbol))
 
     return render_template(
-        "hotels/search.html", form=form, results=rooms,
-        room_types={"S": "Standard", "D": "Double", "F": "Family"},
+        "hotels/search.html", form=form, results=rooms, room_types=ROOM_TYPES,
         booking_start=booking_start, booking_end=booking_end)
 
 
@@ -200,5 +201,42 @@ def search_submit():
 
 
 @bp.route("/room")
+@login_required
 def room():
-    pass
+    location = request.args.get("location", type=int)
+    room_type = request.args.get("room_type", type=int)
+    booking_start = request.args.get("booking_start", type=date.fromisoformat)
+    booking_end = request.args.get("booking_end", type=date.fromisoformat)
+
+    if None in (location, room_type, booking_start, booking_end):
+        flash("Invalid room")
+        redirect(url_for("hotels.home"))
+
+    location_obj = Location.query.get(location)
+    room_type_obj = Roomtype.query.get(room_type)
+
+    rooms = Room.query.join(Room.location).outerjoin(Room.bookings).where(
+        Room.room_type_id == room_type,
+        Location.id == location,
+        or_(
+            Booking.id == None,
+            and_(
+                booking_start <= Booking.booking_end,
+                Booking.booking_start <= booking_end))
+    ).group_by(Room).all()
+
+    if len(rooms) == 0:
+        flash("No {room_type} rooms at {location} in the period {start} - {end}".format(
+            room_type=ROOM_TYPES[room_type_obj.room_type],
+            location=location_obj.name,
+            start=booking_start.isoformat(),
+            end=booking_end.isoformat()
+        ))
+        redirect(url_for("hotels.home"))
+
+    form = BookingForm()
+    form.room.choices = [(r.id, str(r)) for r in rooms]
+
+    return render_template(
+        "hotels/room.html", rooms=rooms, room_types=ROOM_TYPES,
+        location=location_obj, room_type=room_type_obj, form=form)

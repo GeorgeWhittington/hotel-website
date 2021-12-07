@@ -1,9 +1,11 @@
 from datetime import date, timedelta
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField
-from wtforms_components import DateField, IntegerField, DateRange
-from wtforms.validators import InputRequired, Length, NumberRange
+from wtforms import StringField, PasswordField, SelectField, FormField, RadioField, ValidationError
+from wtforms_components import DateField, IntegerField, DateRange, EmailField
+from wtforms.validators import InputRequired, Length, NumberRange, Regexp
+
+from .constants import COUNTRIES_TUPLES, CARD_TYPES
 
 
 class UsernamePasswordForm(FlaskForm):
@@ -26,6 +28,10 @@ class WhereToForm(FlaskForm):
         today = date.today()
         tomorrow = today + timedelta(days=1)
 
+        # TODO: Missed requirement that bookings are not made more than 3 months in advance!
+        # Implement this restriction everywhere.
+        # By 3 months, they seem to mean 90 days exactly, since that's what in the table
+
         self.booking_start.validators += [DateRange(min=today)]
         self.booking_end.validators += [DateRange(min=tomorrow)]
 
@@ -33,3 +39,61 @@ class WhereToForm(FlaskForm):
             self.booking_start.data = today
         if not self.booking_end.data:
             self.booking_end.data = tomorrow
+
+
+class AddressForm(FlaskForm):
+    # TODO: Probably need to add more placeholder text and styling, but I'm bored now, do it later
+    address_1 = StringField("Address Line 1", validators=[InputRequired()])
+    address_2 = StringField("Address Line 2")
+    # Longest postcodes globally seem to be ~12 chars
+    postcode = StringField("Postcode", validators=[InputRequired(), Length(min=1, max=15)])
+    country = SelectField("Country", choices=COUNTRIES_TUPLES, validators=[InputRequired()])
+
+
+class CardExpiryForm(FlaskForm):
+    expiry_month = IntegerField("Month", validators=[InputRequired(), NumberRange(min=1, max=12)])
+    expiry_year = IntegerField("Year", validators=[InputRequired()])
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        today = date.today()
+
+        self.expiry_year.validators += [NumberRange(min=today.year, max=today.year + 15)]
+
+
+class CardForm(FlaskForm):
+    card_type = SelectField("Card Type", choices=CARD_TYPES, validators=[InputRequired()])
+    card_number = StringField("Card Number", validators=[InputRequired()])
+    cardholder_name = StringField("Cardholder Name", validators=[InputRequired()])
+    # Regex: exactly three digits
+    security_code = StringField("Security Code", validators=[InputRequired(), Regexp(r"^\d{3}$")])
+    expiry_date = FormField(CardExpiryForm, label="Expiry Date")
+
+    # TODO: the second address is *still* required, so I'll need to write some js
+    # which duplicates all of the values from the first form whenever the submit button is pressed,
+    # I should probably be able to stop it propogating, do that, and then let it do whatever it's 
+    # set up to do in the html afterwards.
+    which_address = RadioField(
+        "Which Address",
+        choices={1: "Use the same address", 2: "Use a different address"},
+        validators=[InputRequired()])
+    second_address = FormField(AddressForm, label="Card Address")
+
+    def validate_card_number(form, field):
+        # Only spaces and numbers are legal for the field
+        try:
+            spaces_stripped = "".join(field.data.split())
+            int(spaces_stripped)
+        except ValueError:
+            raise ValidationError
+
+
+class BookingForm(FlaskForm):
+    room = SelectField("Room", coerce=int, validators=[InputRequired()])
+    full_name = StringField("Full Name", validators=[InputRequired()])
+    email = EmailField("Email", validators=[InputRequired()])
+
+    address = FormField(AddressForm, label="Address")
+
+    card_details = FormField(CardForm, label="Card Details")

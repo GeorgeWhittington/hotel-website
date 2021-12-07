@@ -1,7 +1,7 @@
 import os
 import json
 
-from flask import Flask
+from flask import Flask, render_template
 
 
 def create_app():
@@ -38,5 +38,15 @@ def create_app():
     def utility_processor():
         currencies = Currency.query.all()
         return dict(currencies=currencies)
+
+    @app.errorhandler(401)
+    def error_401(error):
+        error_msg = "You need to be logged in to reach that page."
+        return render_template("error.html", error_no=401, error_msg=error_msg), 401
+
+    @app.errorhandler(404)
+    def error_404(error):
+        error_msg = "That page could not be found."
+        return render_template("error.html", error_no=404, error_msg=error_msg), 404
 
     return app
