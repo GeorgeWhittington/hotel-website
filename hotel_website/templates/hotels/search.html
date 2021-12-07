@@ -48,6 +48,9 @@
         </div>
       </div>
     {% endfor %}
+    {% if not results %}
+      <h1>No hotel rooms could be found, sorry.</h1>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

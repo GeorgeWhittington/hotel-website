@@ -38,6 +38,8 @@ CARD_TYPES = {
     "M": "Mastercard"
 }
 
+CARD_TYPES_TUPLES = [(code, full_name) for code, full_name in CARD_TYPES.items()]
+
 COUNTRIES = {
     "AD": "Andorra",
     "AE": "United Arab Emirates",

@@ -78,6 +78,10 @@
     flex-direction: column;
 }
 
+.results > h1 {
+    text-align: center;
+}
+
 .hotel-room {
     background-color: var(--content-bg-colour);
     border-radius: 0.4rem;

@@ -5,7 +5,7 @@ from wtforms import StringField, PasswordField, SelectField, FormField, RadioFie
 from wtforms_components import DateField, IntegerField, DateRange, EmailField
 from wtforms.validators import InputRequired, Length, NumberRange, Regexp
 
-from .constants import COUNTRIES_TUPLES, CARD_TYPES
+from .constants import COUNTRIES_TUPLES, CARD_TYPES_TUPLES
 
 
 class UsernamePasswordForm(FlaskForm):
@@ -43,10 +43,16 @@ class WhereToForm(FlaskForm):
 
 class AddressForm(FlaskForm):
     # TODO: Probably need to add more placeholder text and styling, but I'm bored now, do it later
-    address_1 = StringField("Address Line 1", validators=[InputRequired()])
-    address_2 = StringField("Address Line 2")
+    address_1 = StringField(
+        "Address Line 1",
+        render_kw={"placeholder": "Address Line 1"},
+        validators=[InputRequired()])
+    address_2 = StringField("Address Line 2", render_kw={"placeholder": "Address Line 2"})
     # Longest postcodes globally seem to be ~12 chars
-    postcode = StringField("Postcode", validators=[InputRequired(), Length(min=1, max=15)])
+    postcode = StringField(
+        "Postcode",
+        render_kw={"placeholder": "Postcode"},
+        validators=[InputRequired(), Length(min=1, max=15)])
     country = SelectField("Country", choices=COUNTRIES_TUPLES, validators=[InputRequired()])
 
 
@@ -63,22 +69,13 @@ class CardExpiryForm(FlaskForm):
 
 
 class CardForm(FlaskForm):
-    card_type = SelectField("Card Type", choices=CARD_TYPES, validators=[InputRequired()])
-    card_number = StringField("Card Number", validators=[InputRequired()])
-    cardholder_name = StringField("Cardholder Name", validators=[InputRequired()])
+    card_type = SelectField("Card Type", choices=CARD_TYPES_TUPLES, validators=[InputRequired()])
+    card_number = StringField("Card Number", render_kw={"placeholder": "Card Number"}, validators=[InputRequired()])
     # Regex: exactly three digits
-    security_code = StringField("Security Code", validators=[InputRequired(), Regexp(r"^\d{3}$")])
+    security_code = StringField(
+        "Security Code", render_kw={"placeholder": "Security Code"},
+        validators=[InputRequired(), Regexp(r"^\d{3}$")])
     expiry_date = FormField(CardExpiryForm, label="Expiry Date")
-
-    # TODO: the second address is *still* required, so I'll need to write some js
-    # which duplicates all of the values from the first form whenever the submit button is pressed,
-    # I should probably be able to stop it propogating, do that, and then let it do whatever it's 
-    # set up to do in the html afterwards.
-    which_address = RadioField(
-        "Which Address",
-        choices={1: "Use the same address", 2: "Use a different address"},
-        validators=[InputRequired()])
-    second_address = FormField(AddressForm, label="Card Address")
 
     def validate_card_number(form, field):
         # Only spaces and numbers are legal for the field
@@ -90,9 +87,8 @@ class CardForm(FlaskForm):
 
 
 class BookingForm(FlaskForm):
-    room = SelectField("Room", coerce=int, validators=[InputRequired()])
-    full_name = StringField("Full Name", validators=[InputRequired()])
-    email = EmailField("Email", validators=[InputRequired()])
+    full_name = StringField("Full Name", render_kw={"placeholder": "Full Name"}, validators=[InputRequired()])
+    email = EmailField("Email", render_kw={"placeholder": "Email"}, validators=[InputRequired()])
 
     address = FormField(AddressForm, label="Address")
 

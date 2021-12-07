@@ -159,7 +159,7 @@ def search():
 
 @bp.route("/search_submit", methods=["POST"])
 def search_submit():
-    form = WhereToForm(request.form)
+    form = WhereToForm()
     locations = Location.query.order_by(Location.name).all()
     form.location.choices = [(l.id, l.name) for l in locations]
 
@@ -235,8 +235,17 @@ def room():
         redirect(url_for("hotels.home"))
 
     form = BookingForm()
-    form.room.choices = [(r.id, str(r)) for r in rooms]
+
+    if form.validate_on_submit():
+        return redirect(url_for("hotels.room_confirm"))
 
     return render_template(
         "hotels/room.html", rooms=rooms, room_types=ROOM_TYPES,
         location=location_obj, room_type=room_type_obj, form=form)
+
+
+@bp.route("/room_confirm")
+@login_required
+def room_confirm():
+    return ("Your room was successfully booked :) (the user would "
+            "also have access to a pdf confirmation of their booking)", 200)

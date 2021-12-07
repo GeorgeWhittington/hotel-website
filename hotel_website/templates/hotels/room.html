@@ -12,7 +12,6 @@
 
 <form method="POST" action="#">
   {{ form.csrf_token }}
-  {{ form.room }}
   <h1>Personal Information</h1>
   {{ form.full_name }}
   {{ form.email }}
@@ -27,23 +26,17 @@
     {% endfor %}
   </select>
   <h1>Card Details</h1>
-  {{ form.card_details.card_type }}
-  {{ form.card_details.card_number }}
-  {{ form.card_details.cardholder_name }}
-  {{ form.card_details.security_code }}
-  {{ form.card_details.expiry_date.expiry_month }}
-  {{ form.card_details.expiry_date.expiry_year }}
-  {{ form.card_details.which_address }}
-  <h1>Second Address</h1>
-  {{ form.card_details.second_address.address_1 }}
-  {{ form.card_details.second_address.address_2 }}
-  {{ form.card_details.second_address.postcode }}
-  <select name="card_details-second_address-country" id="card_details-second_address-country" required>
-    <option value="" disabled selected>Select Country</option>
-    {% for option in form.card_details.second_address.country %}
+  <select name="card_details-card_type" id="card_details-card_type" required>
+    <option value="" disabled selected>Select Card Type</option>
+    {% for option in form.card_details.card_type %}
       {{ option }}
     {% endfor %}
   </select>
+  {{ form.card_details.card_number }}
+  {{ form.card_details.security_code }}
+  {{ form.card_details.expiry_date.label }}
+  {{ form.card_details.expiry_date.expiry_month }}
+  {{ form.card_details.expiry_date.expiry_year }}
   <input type="submit" value="Book">
 </form>
 {% endblock %}
