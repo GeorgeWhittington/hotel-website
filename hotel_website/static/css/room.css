@@ -1,0 +1,21 @@
+.content {
+    align-items: flex-start !important;
+}
+
+/* Header */
+
+.hero {
+    width: 100%;
+    display: flex;
+    background-color: var(--content-bg-colour);
+    border-radius: 0.4rem;
+}
+
+.hero img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.4rem 0 0 0.4rem;
+}
+
+/* Booking Form */

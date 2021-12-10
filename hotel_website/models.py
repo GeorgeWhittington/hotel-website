@@ -171,21 +171,32 @@ def rooms_available(self, start: date, end: date, **kwargs) -> int:
     Keyword Arguments:
         room_types: A tuple of Roomtype objects, by default all room types are selected
     """
-    room_types = kwargs.get("room_types", (1, 2, 3))
+    room_types = kwargs.get("room_types", [rt for rt in Roomtype.query.all()])
+    try:
+        _ = list(room_types)[0]
+    except TypeError:
+        raise ValueError("Invalid room_types value, a list/tuple of room_types must be provided") from TypeError
+
     if isinstance(room_types[0], Roomtype):
-        room_types = (rt.id for rt in room_types)
+        room_types = [rt.id for rt in room_types]
 
-    # Logic for testing if there is any overlap of ranges from: https://stackoverflow.com/a/3269471
-    rooms = Room.query.join(Room.location).where(Location.id == self.id).count()
+    rooms = Room.query.with_entities(func.count(Room.id)).where(
+        Room.location_id == self.id,
+        Room.room_type_id.in_(room_types)
+    ).first()[0]
 
-    rooms_occupied = Room.query.join(Room.location).join(Room.room_type).join(Room.bookings, isouter=True).where(
-        Roomtype.id.in_(room_types),
-        Location.id == self.id,
+    rooms_used = Room.query.with_entities(func.count(Room.id))
+    rooms_used = rooms_used.outerjoin(Room.bookings).where(
+        Room.location_id == self.id,
+        Room.room_type_id.in_(room_types),
         Booking.id != None,
+        # Logic for testing if there is any overlap of ranges from:
+        # https://stackoverflow.com/a/3269471
         start <= Booking.booking_end,
         Booking.booking_start <= end
-    ).count()
-    return rooms - rooms_occupied
+    ).first()[0]
+
+    return rooms - rooms_used
 
 
 Location.rooms_available = rooms_available

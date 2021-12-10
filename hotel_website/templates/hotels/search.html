@@ -35,13 +35,13 @@
             <h3>{{ location.name }}</h3>
             <p>{{ room_types.get(room_type.room_type) }} Room</p>
             <p>Max Occupants: {{ room_type.max_occupants }}</p>
-            <p>{{ location.rooms_available(booking_start, booking_end, room_types=(room_type,)) }} Rooms available in that period</p>
+            <p>{{ location.rooms_available(booking_start, booking_end, room_types=(room_type,)) }} Rooms left</p>
           </div>
           <div class="hotel-room-booking">
             {% if discount_price is none %}
-              <p>{{ symbol }}{{ "{:.2f}".format(price) }}</p>
+              <p>{{ symbol }}{{ "{:.2f}".format(price) }} for {{ booking_duration }}</p>
             {% else %}
-              <p><strike>{{ symbol }}{{ "{:.2f}".format(price) }}</strike> {{ symbol }}{{ "{:.2f}".format(discount_price) }}</p>
+              <p><strike>{{ symbol }}{{ "{:.2f}".format(price) }}</strike> {{ symbol }}{{ "{:.2f}".format(discount_price) }} for {{ booking_duration}}</p>
             {% endif %}
             <p class="hotel-room-button"><a href="{{ url_for('hotels.room', location=location.id, room_type=room_type.id, booking_start=booking_start, booking_end=booking_end) }}">Book Now</a></p>
           </div>

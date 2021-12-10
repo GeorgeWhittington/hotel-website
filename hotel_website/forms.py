@@ -1,11 +1,11 @@
 from datetime import date, timedelta
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField, FormField, RadioField, ValidationError
+from wtforms import StringField, PasswordField, SelectField, FormField, ValidationError
 from wtforms_components import DateField, IntegerField, DateRange, EmailField
 from wtforms.validators import InputRequired, Length, NumberRange, Regexp
 
-from .constants import COUNTRIES_TUPLES, CARD_TYPES_TUPLES
+from .constants import COUNTRIES_TUPLES, CARD_TYPES_TUPLES, MAX_GUESTS
 
 
 class UsernamePasswordForm(FlaskForm):
@@ -15,11 +15,15 @@ class UsernamePasswordForm(FlaskForm):
 
 class WhereToForm(FlaskForm):
     location = SelectField("Location", coerce=int, validators=[InputRequired()])
-    booking_start = DateField("Booking start", validators=[InputRequired()])
-    booking_end = DateField("Booking end", format="%Y-%m-%d", validators=[InputRequired()])
+    booking_start = DateField(
+        "Booking start", render_kw={"title": "Enter booking start date"},
+        format="%Y-%m-%d", validators=[InputRequired()])
+    booking_end = DateField(
+        "Booking end", render_kw={"title": "Enter booking end date"},
+        format="%Y-%m-%d", validators=[InputRequired()])
     guests = IntegerField(
-        "Number of guests", render_kw={"placeholder": "Number of guests"},
-        validators=[InputRequired(), NumberRange(min=1, max=6)])
+        "Number of guests", render_kw={"placeholder": "Number of guests", "data_toggle": "tooltip"},
+        validators=[InputRequired(), NumberRange(min=1, max=MAX_GUESTS)])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -39,6 +43,22 @@ class WhereToForm(FlaskForm):
             self.booking_start.data = today
         if not self.booking_end.data:
             self.booking_end.data = tomorrow
+
+    @staticmethod
+    def test_duration(booking_start, booking_end):
+        """If the booking duration is invalid, returns True"""
+        return (
+            booking_start is None or
+            booking_end is None or
+            booking_start < date.today() or
+            booking_end <= date.today() or
+            booking_start > booking_end
+        )
+
+    @staticmethod
+    def test_guests(guests):
+        """If the number of guests is invalid, returns True"""
+        return guests < 1 or guests > MAX_GUESTS
 
 
 class AddressForm(FlaskForm):

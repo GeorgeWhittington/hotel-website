@@ -7,24 +7,7 @@ from flask_login import login_required
 
 from .models import db, Location, Booking, Room, Roomtype, Currency
 from .forms import WhereToForm, BookingForm
-from .constants import MAX_GUESTS, CURRENCY_SYMBOLS, ROOM_TYPES
-
-
-def test_booking_duration(booking_start, booking_end):
-    """If the booking duration is invalid, returns True"""
-    return (
-        booking_start is None or
-        booking_end is None or
-        booking_start < date.today() or
-        booking_end <= date.today() or
-        booking_start > booking_end
-    )
-
-
-def test_guests(guests):
-    """If the number of guests is invalid, returns True"""
-    return guests < 1 or guests > MAX_GUESTS
-
+from .constants import CURRENCY_SYMBOLS, ROOM_TYPES
 
 bp = Blueprint("hotels", __name__)
 
@@ -75,7 +58,7 @@ def search():
     else:
         form.location.data = location
 
-    if test_booking_duration(booking_start, booking_end):
+    if WhereToForm.test_duration(booking_start, booking_end):
         invalid = True
         booking_start = form.booking_start.data
         booking_end = form.booking_end.data
@@ -83,7 +66,7 @@ def search():
         form.booking_start.data = booking_start
         form.booking_end.data = booking_end
 
-    if test_guests(guests):
+    if WhereToForm.test_guests(guests):
         invalid = True
         guests = 1
     else:
@@ -102,8 +85,8 @@ def search():
             return redirect(url_for("hotels.home"))
 
         if (location not in location_ids or
-                test_booking_duration(booking_start, booking_end) or
-                test_guests(guests)):
+                WhereToForm.test_duration(booking_start, booking_end) or
+                WhereToForm.test_guests(guests)):
             # Previous search is now invalid, cannot populate results with it
             flash("Invalid search parameters")
             return redirect(url_for("hotels.home"))
@@ -136,13 +119,12 @@ def search():
     locations = {l.id: l for l in locations}
     room_types = {rt.id: rt for rt in Roomtype.query.all()}
 
+    currency_acronym = request.cookies.get("current_currency", default="GBP")
+    currency = Currency.query.filter_by(acronym=currency_acronym).first()
     rooms = []
     for l_id, rt_id in results:
         location = locations[l_id]
         room_type = room_types[rt_id]
-
-        currency_acronym = request.cookies.get("current_currency", default="GBP")
-        currency = Currency.query.filter_by(acronym=currency_acronym).first()
 
         symbol = CURRENCY_SYMBOLS[currency_acronym]
 
@@ -152,9 +134,11 @@ def search():
 
         rooms.append((location, room_type, price, discount_price, symbol))
 
+    booking_duration = str(booking_end - booking_start + timedelta(days=1))[:-9]
+
     return render_template(
         "hotels/search.html", form=form, results=rooms, room_types=ROOM_TYPES,
-        booking_start=booking_start, booking_end=booking_end)
+        booking_start=booking_start, booking_end=booking_end, booking_duration=booking_duration)
 
 
 @bp.route("/search_submit", methods=["POST"])
@@ -207,10 +191,13 @@ def room():
     room_type = request.args.get("room_type", type=int)
     booking_start = request.args.get("booking_start", type=date.fromisoformat)
     booking_end = request.args.get("booking_end", type=date.fromisoformat)
+    guests = request.args.get("guests", type=int)
 
     if None in (location, room_type, booking_start, booking_end):
         flash("Invalid room")
         redirect(url_for("hotels.home"))
+
+    # test all the inputs as previously in search
 
     location_obj = Location.query.get(location)
     room_type_obj = Roomtype.query.get(room_type)
@@ -234,6 +221,15 @@ def room():
         ))
         redirect(url_for("hotels.home"))
 
+    currency_acronym = request.cookies.get("current_currency", default="GBP")
+    currency = Currency.query.filter_by(acronym=currency_acronym).first()
+
+    symbol = CURRENCY_SYMBOLS[currency_acronym]
+
+    price, discount_price = location_obj.find_room_prices(
+        room_type=room_type_obj, booking_start=booking_start,
+        booking_end=booking_end, currency=currency, guests=guests)
+
     form = BookingForm()
 
     if form.validate_on_submit():
@@ -241,7 +237,9 @@ def room():
 
     return render_template(
         "hotels/room.html", rooms=rooms, room_types=ROOM_TYPES,
-        location=location_obj, room_type=room_type_obj, form=form)
+        location=location_obj, room_type=room_type_obj, form=form,
+        booking_start=booking_start, booking_end=booking_end,
+        symbol=symbol, price=price, discount_price=discount_price)
 
 
 @bp.route("/room_confirm")

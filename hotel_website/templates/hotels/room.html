@@ -1,21 +1,33 @@
 {% extends "base.html" %}
 
-{% block title %}{{ room_types[room_type.room_type] }} Room in {{ location.name }}{% endblock %}
+{% block title %}Book {{ room_types[room_type.room_type] }} Room in {{ location.name }}{% endblock %}
 
 {% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/room.css') }}">
 {% endblock %}
 
 {% block content %}
-{% for room in rooms %}
-  {{ room }}
-{% endfor %}
+
+<header class="hero">
+  <img src="{{ url_for('static', filename=location.image ) }}" />
+  <div class="hero-inner">
+    <h1>{{ room_types[room_type.room_type] }} Room in {{ location.name }}</h1>
+    <p>Max Occupants: {{ room_type.max_occupants }}</p>
+    <p>{{ location.rooms_available(booking_start, booking_end, room_types=(room_type,)) }} Rooms left</p>
+    {% if discount_price is none %}
+      <p>{{ symbol }}{{ "{:.2f}".format(price) }}</p>
+    {% else %}
+      <p><strike>{{ symbol }}{{ "{:.2f}".format(price) }}</strike> {{ symbol }}{{ "{:.2f}".format(discount_price) }}</p>
+    {% endif %}
+  </div>
+</header>
 
 <form method="POST" action="#">
   {{ form.csrf_token }}
-  <h1>Personal Information</h1>
+  <h2>Personal Information</h2>
   {{ form.full_name }}
   {{ form.email }}
-  <h1>Address</h1>
+  <h2>Address</h2>
   {{ form.address.address_1 }}
   {{ form.address.address_2 }}
   {{ form.address.postcode }}
@@ -25,7 +37,7 @@
       {{ option }}
     {% endfor %}
   </select>
-  <h1>Card Details</h1>
+  <h2>Card Details</h2>
   <select name="card_details-card_type" id="card_details-card_type" required>
     <option value="" disabled selected>Select Card Type</option>
     {% for option in form.card_details.card_type %}
