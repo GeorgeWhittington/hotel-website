@@ -2,7 +2,7 @@ from datetime import date, timedelta
 import calendar
 
 from sqlalchemy import or_, and_, not_, func, text
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required
 
 from .models import db, Location, Booking, Room, Roomtype, Currency
@@ -91,7 +91,7 @@ def search():
     results = results.where(
         Roomtype.max_occupants >= guests,
         or_(
-            Booking.id == None,
+            Booking.id == None,  # noqa: E711
             not_(and_(
                 booking_start <= Booking.booking_end,
                 Booking.booking_start <= booking_end
@@ -144,7 +144,7 @@ def room():
     #
     # EXCEPT! Have two forms. Pls. One for selecting that lot, then a second for
     # actually booking. Do it the way /search-submit was working, external page that
-    # does the logic for each form. I think make the adjustments form loop back to here, 
+    # does the logic for each form. I think make the adjustments form loop back to here,
     # the booking form go to somewhere else.
 
     location_obj = Location.query.get(location)
@@ -154,7 +154,7 @@ def room():
         Room.room_type_id == room_type,
         Room.location_id == location,
         or_(
-            Booking.id == None,
+            Booking.id == None,  # noqa: E711
             and_(
                 booking_start <= Booking.booking_end,
                 Booking.booking_start <= booking_end))

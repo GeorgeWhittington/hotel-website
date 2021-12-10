@@ -23,7 +23,7 @@ def create_app():
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         FLASK_ADMIN_SWATCH="cerulean")
 
-    from .models import db, User, Location, Currency, Roomtype, Room, Booking
+    from .models import db, User, Location, Currency, Roomtype, Room, Booking  # noqa: F401
     db.init_app(app)
 
     from . import hotels, auth, admin

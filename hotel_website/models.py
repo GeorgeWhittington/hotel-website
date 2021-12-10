@@ -61,7 +61,7 @@ class Location(db.Model):
         return self.name
 
     def find_room_prices(
-            self: Type["Location"],
+            self,
             room_type: Type["Roomtype"],
             booking_start: date,
             booking_end: date,
@@ -138,8 +138,6 @@ class Roomtype(db.Model):
 
 
 class Room(db.Model):
-    # TODO: make the pk a combination of location_id and room_type_id?
-    # Would have to change some queries, but it'd probably be neater
     id = db.Column(db.Integer, primary_key=True)
 
     location_id = db.Column(db.Integer, db.ForeignKey("location.id"))
@@ -152,6 +150,10 @@ class Room(db.Model):
 
 
 class Booking(db.Model):
+    # TODO: Do I want to store limited address/card info from the form
+    # so that the reciept pdf can be generated multiple times,
+    # or do we just store a generated pdf, and whenever the user wants to
+    # modify their booking, they have to re-enter all info?
     id = db.Column(db.Integer, primary_key=True)
     guests = db.Column(db.Integer, nullable=False)
     booking_start = db.Column(db.Date, nullable=False)
@@ -189,7 +191,7 @@ def rooms_available(self, start: date, end: date, **kwargs) -> int:
     rooms_used = rooms_used.outerjoin(Room.bookings).where(
         Room.location_id == self.id,
         Room.room_type_id.in_(room_types),
-        Booking.id != None,
+        Booking.id != None,  # noqa: E711
         # Logic for testing if there is any overlap of ranges from:
         # https://stackoverflow.com/a/3269471
         start <= Booking.booking_end,
