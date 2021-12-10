@@ -12,11 +12,30 @@ from .constants import CURRENCY_SYMBOLS, ROOM_TYPES, LOCATION_ERR, DURATION_ERR,
 bp = Blueprint("hotels", __name__)
 
 
-@bp.route("/")
+@bp.route("/", methods=["GET", "POST"])
 def home():
     form = WhereToForm()
     locations = Location.query.order_by(Location.name).all()
     form.location.choices = [(l.id, l.name) for l in locations]
+
+    if form.validate_on_submit():
+        if not WhereToForm.test_duration(form.booking_start.data, form.booking_end.data):
+            form_data = {
+                "location": form.location.data,
+                "booking_start": form.booking_start.data,
+                "booking_end": form.booking_end.data,
+                "guests": form.guests.data
+            }
+            return redirect(url_for("hotels.search", **form_data))
+
+        if form.location.errors:
+            flash(LOCATION_ERR)
+
+        if WhereToForm.test_duration(form.booking_start.data, form.booking_end.data):
+            flash(DURATION_ERR)
+
+        if WhereToForm.test_guests(form.guests.data):
+            flash(GUESTS_ERR)
 
     today = date.today()
     next_week = today + timedelta(days=7)
@@ -38,34 +57,60 @@ def home():
         today=today.isoformat(), next_week=next_week.isoformat())
 
 
-@bp.route("/search")
+@bp.route("/search", methods=["GET", "POST"])
 def search():
     form = WhereToForm()
     locations = Location.query.order_by(Location.name).all()
     location_ids = [loc.id for loc in locations]
     form.location.choices = [(loc.id, loc.name) for loc in locations]
 
-    location = request.args.get("location", type=int)
-    booking_start = request.args.get("booking_start", type=date.fromisoformat)
-    booking_end = request.args.get("booking_end", type=date.fromisoformat)
-    guests = request.args.get("guests", type=int)
+    if request.method == "POST":
+        duration_err = False
 
-    # If url args are valid, prefill form with them.
-    if location in location_ids:
-        form.location.data = location
-    else:
-        flash(LOCATION_ERR)
+        if form.validate_on_submit():
+            if not WhereToForm.test_duration(form.booking_start.data, form.booking_end.data):
+                form_data = {
+                    "location": form.location.data,
+                    "booking_start": form.booking_start.data,
+                    "booking_end": form.booking_end.data,
+                    "guests": form.guests.data
+                }
+                return redirect(url_for("hotels.search", **form_data))
+            else:
+                duration_err = True
 
-    if not WhereToForm.test_duration(booking_start, booking_end):
-        form.booking_start.data = booking_start
-        form.booking_end.data = booking_end
-    else:
-        flash(DURATION_ERR)
+        if form.location.errors:
+            flash(LOCATION_ERR)
 
-    if not WhereToForm.test_guests(guests):
-        form.guests.data = guests
+        if form.booking_start.errors or form.booking_end.errors or duration_err:
+            flash(DURATION_ERR)
+
+        if form.guests.errors:
+            flash(GUESTS_ERR)
+
+        return render_template("hotels/search.html", form=form, room_types=ROOM_TYPES)
     else:
-        flash(GUESTS_ERR)
+        location = request.args.get("location", type=int)
+        booking_start = request.args.get("booking_start", type=date.fromisoformat)
+        booking_end = request.args.get("booking_end", type=date.fromisoformat)
+        guests = request.args.get("guests", type=int)
+
+        # If url args are valid, prefill form with them.
+        if location in location_ids:
+            form.location.data = location
+        else:
+            flash(LOCATION_ERR)
+
+        if not WhereToForm.test_duration(booking_start, booking_end):
+            form.booking_start.data = booking_start
+            form.booking_end.data = booking_end
+        else:
+            flash(DURATION_ERR)
+
+        if not WhereToForm.test_guests(guests):
+            form.guests.data = guests
+        else:
+            flash(GUESTS_ERR)
 
     # Invalid search, don't populate results
     if any(item is None for item in [location, booking_start, booking_end, guests]):
@@ -111,51 +156,6 @@ def search():
     return render_template(
         "hotels/search.html", form=form, results=rooms, room_types=ROOM_TYPES,
         booking_start=booking_start, booking_end=booking_end, booking_duration=booking_duration)
-
-
-@bp.route("/search_submit", methods=["POST"])
-def search_submit():
-    # TODO: Think about just going back to doing this on search and home induvidually?
-    # Right now the errors on search can get duplicated if theres invalid state there,
-    # and an invalid form is submitted from there (EG: GET with Location url arg missing,
-    # then POST to here with location option in form not yet picked)
-    form = WhereToForm()
-    locations = Location.query.order_by(Location.name).all()
-    form.location.choices = [(l.id, l.name) for l in locations]
-
-    if form.validate_on_submit():
-        if not WhereToForm.test_duration(form.booking_start.data, form.booking_end.data):
-            form_data = {
-                "location": form.location.data,
-                "booking_start": form.booking_start.data,
-                "booking_end": form.booking_end.data,
-                "guests": form.guests.data
-            }
-            return redirect(url_for("hotels.search", **form_data))
-
-    if form.location.errors:
-        flash(LOCATION_ERR)
-
-    if WhereToForm.test_duration(form.booking_start.data, form.booking_end.data):
-        flash(DURATION_ERR)
-
-    if WhereToForm.test_guests(form.guests.data):
-        flash(GUESTS_ERR)
-
-    referrer = request.referrer[8:]  # Cut off http/https prefix
-    referrer_path = referrer[referrer.find("/"):]  # Slice by first / for the path
-    if (query_ind := referrer_path.find("?")) != -1:
-        # Slice by first ?, if there is one, to cut off url queries
-        referrer_path = referrer_path[:query_ind]
-
-    lookup = {
-        "/": "hotels.home",
-        "/search": "hotels.search"
-    }
-
-    print(referrer_path)
-
-    return redirect(url_for(lookup.get(referrer_path, "hotels.home")))
 
 
 @bp.route("/room")

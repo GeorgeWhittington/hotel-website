@@ -11,7 +11,7 @@
   <div class="filter-wrapper">
     <div class="filter">
       <h2>Filter</h2>
-      <form method="POST" action="{{ url_for('hotels.search_submit') }}">
+      <form method="POST" action="{{ url_for('hotels.search') }}">
         {{ form.csrf_token }}
         <select name="location" id="location">
           <option value="" disabled selected>Select Location</option>
