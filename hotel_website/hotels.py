@@ -18,24 +18,10 @@ def home():
     locations = Location.query.order_by(Location.name).all()
     form.location.choices = [(l.id, l.name) for l in locations]
 
-    if form.validate_on_submit():
-        if not WhereToForm.test_duration(form.booking_start.data, form.booking_end.data):
-            form_data = {
-                "location": form.location.data,
-                "booking_start": form.booking_start.data,
-                "booking_end": form.booking_end.data,
-                "guests": form.guests.data
-            }
+    if request.method == "POST":
+        form_data = form.check()
+        if form_data:
             return redirect(url_for("hotels.search", **form_data))
-
-        if form.location.errors:
-            flash(LOCATION_ERR)
-
-        if WhereToForm.test_duration(form.booking_start.data, form.booking_end.data):
-            flash(DURATION_ERR)
-
-        if WhereToForm.test_guests(form.guests.data):
-            flash(GUESTS_ERR)
 
     today = date.today()
     next_week = today + timedelta(days=7)
@@ -65,28 +51,9 @@ def search():
     form.location.choices = [(loc.id, loc.name) for loc in locations]
 
     if request.method == "POST":
-        duration_err = False
-
-        if form.validate_on_submit():
-            if not WhereToForm.test_duration(form.booking_start.data, form.booking_end.data):
-                form_data = {
-                    "location": form.location.data,
-                    "booking_start": form.booking_start.data,
-                    "booking_end": form.booking_end.data,
-                    "guests": form.guests.data
-                }
-                return redirect(url_for("hotels.search", **form_data))
-            else:
-                duration_err = True
-
-        if form.location.errors:
-            flash(LOCATION_ERR)
-
-        if form.booking_start.errors or form.booking_end.errors or duration_err:
-            flash(DURATION_ERR)
-
-        if form.guests.errors:
-            flash(GUESTS_ERR)
+        form_data = form.check()
+        if form_data:
+            return redirect(url_for("hotels.search", **form_data))
 
         return render_template("hotels/search.html", form=form, room_types=ROOM_TYPES)
     else:
@@ -171,14 +138,21 @@ def room():
         flash("Invalid room")
         redirect(url_for("hotels.home"))
 
-    # test all the inputs as previously in search
+    # TODO: So the form here should probably let you adjust the number of guests,
+    # the room type and the booking start + end. So the same pattern of checking
+    # url + form as used on search should be used here.
+    #
+    # EXCEPT! Have two forms. Pls. One for selecting that lot, then a second for
+    # actually booking. Do it the way /search-submit was working, external page that
+    # does the logic for each form. I think make the adjustments form loop back to here, 
+    # the booking form go to somewhere else.
 
     location_obj = Location.query.get(location)
     room_type_obj = Roomtype.query.get(room_type)
 
-    rooms = Room.query.join(Room.location).outerjoin(Room.bookings).where(
+    rooms = Room.query.outerjoin(Room.bookings).where(
         Room.room_type_id == room_type,
-        Location.id == location,
+        Room.location_id == location,
         or_(
             Booking.id == None,
             and_(

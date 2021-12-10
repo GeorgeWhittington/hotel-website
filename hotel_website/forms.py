@@ -1,11 +1,12 @@
 from datetime import date, timedelta
 
+from flask import flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SelectField, FormField, ValidationError
 from wtforms_components import DateField, IntegerField, DateRange, EmailField
 from wtforms.validators import InputRequired, Length, NumberRange, Regexp
 
-from .constants import COUNTRIES_TUPLES, CARD_TYPES_TUPLES, MAX_GUESTS
+from .constants import COUNTRIES_TUPLES, CARD_TYPES_TUPLES, MAX_GUESTS, LOCATION_ERR, DURATION_ERR, GUESTS_ERR
 
 
 class UsernamePasswordForm(FlaskForm):
@@ -36,6 +37,32 @@ class WhereToForm(FlaskForm):
         self.booking_start.validators += [DateRange(min=today, max=three_months)]
         self.booking_end.validators += [DateRange(min=tomorrow, max=three_months)]
 
+    def check(self):
+        """Checks the form response for errors.
+        If any are found, an appropriate error message is flashed and None is returned.
+        If the response is fine, a dictionary is returned which can be used to fill url args with.
+        """
+        duration_err = False
+        if self.validate_on_submit():
+            if not self.test_duration(self.booking_start.data, self.booking_end.data):
+                return {
+                    "location": self.location.data,
+                    "booking_start": self.booking_start.data,
+                    "booking_end": self.booking_end.data,
+                    "guests": self.guests.data
+                }
+            else:
+                duration_err = True
+
+        if self.location.errors:
+            flash(LOCATION_ERR)
+
+        if duration_err or self.booking_start.errors or self.booking_end.errors:
+            flash(DURATION_ERR)
+
+        if self.guests.errors:
+            flash(GUESTS_ERR)
+
     @staticmethod
     def test_duration(booking_start, booking_end):
         """If the booking duration is invalid, returns True"""
@@ -48,7 +75,7 @@ class WhereToForm(FlaskForm):
             booking_start < today or
             booking_end <= today or
             booking_end > three_months or
-            booking_start > booking_end
+            booking_start >= booking_end
         )
 
     @staticmethod
