@@ -15,6 +15,10 @@ PEAK_PRICING = {
 
 MAX_GUESTS = 6
 
+LOCATION_ERR = "Please select a location from the list provided."
+DURATION_ERR = "Please select a valid booking duration."
+GUESTS_ERR = "Please select a number of guests between 1 and 6."
+
 # Room cost multipliers
 SINGLE_ROOM = 1.0
 DOUBLE_ROOM_ONE_GUEST = 1.2

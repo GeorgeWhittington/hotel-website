@@ -22,7 +22,7 @@ class WhereToForm(FlaskForm):
         "Booking end", render_kw={"title": "Enter booking end date"},
         format="%Y-%m-%d", validators=[InputRequired()])
     guests = IntegerField(
-        "Number of guests", render_kw={"placeholder": "Number of guests", "data_toggle": "tooltip"},
+        "Number of guests", render_kw={"placeholder": "Number of guests"},
         validators=[InputRequired(), NumberRange(min=1, max=MAX_GUESTS)])
 
     def __init__(self, *args, **kwargs):
@@ -31,34 +31,32 @@ class WhereToForm(FlaskForm):
         # Add validators and defaults on form creation so dates are correct
         today = date.today()
         tomorrow = today + timedelta(days=1)
+        three_months = today + timedelta(days=90)
 
-        # TODO: Missed requirement that bookings are not made more than 3 months in advance!
-        # Implement this restriction everywhere.
-        # By 3 months, they seem to mean 90 days exactly, since that's what in the table
-
-        self.booking_start.validators += [DateRange(min=today)]
-        self.booking_end.validators += [DateRange(min=tomorrow)]
-
-        if not self.booking_start.data:
-            self.booking_start.data = today
-        if not self.booking_end.data:
-            self.booking_end.data = tomorrow
+        self.booking_start.validators += [DateRange(min=today, max=three_months)]
+        self.booking_end.validators += [DateRange(min=tomorrow, max=three_months)]
 
     @staticmethod
     def test_duration(booking_start, booking_end):
         """If the booking duration is invalid, returns True"""
+        today = date.today()
+        three_months = today + timedelta(days=90)
+
         return (
             booking_start is None or
             booking_end is None or
-            booking_start < date.today() or
-            booking_end <= date.today() or
+            booking_start < today or
+            booking_end <= today or
+            booking_end > three_months or
             booking_start > booking_end
         )
 
     @staticmethod
     def test_guests(guests):
         """If the number of guests is invalid, returns True"""
-        return guests < 1 or guests > MAX_GUESTS
+        return (guests is None or
+                guests < 1 or
+                guests > MAX_GUESTS)
 
 
 class AddressForm(FlaskForm):
