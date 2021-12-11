@@ -22,8 +22,8 @@ Now that all the requirements are installed, create your database. Then make a c
 
 This project is set up to use the [flask cli](https://flask.palletsprojects.com/en/2.0.x/cli/). You will need to set the `FLASK_APP` environment variable to `run.py`, and the `FLASK_ENV` environment variable to `development` before proceeding for any commands beginning with `flask` to run.
 
-To create the tables of the database, you will need to run the command: `flask createdb`.
+To create the tables of the database, you will need to run the command: `flask create-db`.
 
-To populate the database, run the command: `flask filldb`.
+To populate the database, run the command: `flask fill-db`.
 
 Now you can run the website with the command: `flask run`.
