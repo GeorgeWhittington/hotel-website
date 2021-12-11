@@ -2,5 +2,11 @@
 
 {% block title %}My Account{% endblock %}
 {% block content %}
-<p>Your username is: {{current_user.username}}</p>
+<h1>Welcome, {{ current_user.username }}</h1>
+<h2>Your bookings:</h2>
+<ul>
+    {% for booking in bookings %}
+    <li>{{ booking.guests }} {{ "guests" if booking.guests > 1 else "guest" }} in {{ booking.room.location.name }} from {{ booking.booking_start }} to {{ booking.booking_end }}</li>
+    {% endfor %}
+</ul>
 {% endblock %}

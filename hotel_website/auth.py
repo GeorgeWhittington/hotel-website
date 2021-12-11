@@ -1,10 +1,12 @@
+from datetime import date
+
 from flask import Blueprint, redirect, url_for, flash, request
 from flask.templating import render_template
-from flask_login import LoginManager, login_required
+from flask_login import LoginManager, login_required, current_user
 from flask_login.utils import login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from .models import db, User
+from .models import db, User, Booking
 from .forms import UsernamePasswordForm
 
 bp = Blueprint("auth", __name__)
@@ -71,4 +73,9 @@ def register():
 @bp.route("/my-account")
 @login_required
 def my_account():
-    return render_template("auth/my_account.html")
+    bookings = Booking.query.where(
+        Booking.user == current_user,
+        Booking.booking_end >= date.today()
+    ).all()
+
+    return render_template("auth/my_account.html", bookings=bookings)
