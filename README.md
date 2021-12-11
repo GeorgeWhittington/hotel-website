@@ -24,6 +24,6 @@ This project is set up to use the [flask cli](https://flask.palletsprojects.com/
 
 To create the tables of the database, you will need to run the command: `flask createdb`.
 
-To populate the database, first run the sql code inside hotel_website/data.sql on the database. Then run the command: `flask filldb`.
+To populate the database, run the command: `flask filldb`.
 
 Now you can run the website with the command: `flask run`.
