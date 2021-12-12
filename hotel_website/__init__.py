@@ -12,13 +12,14 @@ def create_app(testing=False):
     except OSError:
         pass
 
-    with open(os.path.join(app.instance_path, "config.json")) as f:
-        data = json.load(f)
-        db_uri = data["db_uri"]
-        secret_key = data["secret_key"]
-
     if testing:
         db_uri = "sqlite://"  # In memory sqlite db for tests
+        secret_key = "a supremely secure key for testing"
+    else:
+        with open(os.path.join(app.instance_path, "config.json")) as f:
+            data = json.load(f)
+            db_uri = data["db_uri"]
+            secret_key = data["secret_key"]
 
     app.config.from_mapping(
         SECRET_KEY=secret_key,  # This should be a cryptographically secure value for production
