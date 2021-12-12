@@ -134,9 +134,12 @@ def room():
     booking_end = request.args.get("booking_end", type=date.fromisoformat)
     guests = request.args.get("guests", type=int)
 
-    if None in (location, room_type, booking_start, booking_end):
+    for uh in (location, room_type, booking_start, booking_end, guests):
+        print(uh)
+
+    if None in (location, room_type, booking_start, booking_end, guests):
         flash("Invalid room")
-        redirect(url_for("hotels.home"))
+        return redirect(url_for("hotels.home"))
 
     # TODO: So the form here should probably let you adjust the number of guests,
     # the room type and the booking start + end. So the same pattern of checking
@@ -167,7 +170,7 @@ def room():
             start=booking_start.isoformat(),
             end=booking_end.isoformat()
         ))
-        redirect(url_for("hotels.home"))
+        return redirect(url_for("hotels.home"))
 
     currency_acronym = request.cookies.get("current_currency", default="GBP")
     currency = Currency.query.filter_by(acronym=currency_acronym).first()
