@@ -5,6 +5,7 @@ import calendar
 from sqlalchemy.sql import expression, func
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash
 
 from .constants import PEAK_PRICING, SINGLE_ROOM, DOUBLE_ROOM_ONE_GUEST, DOUBLE_ROOM_TWO_GUESTS, FAMILY_ROOM
 
@@ -17,6 +18,9 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(102), nullable=False)
     admin = db.Column(db.Boolean, server_default=expression.false(), nullable=False)
 
+    def __str__(self):
+        return self.username
+
     @staticmethod
     def get(user_id: str) -> Union["User", None]:
         user = User.query.get(user_id)
@@ -26,8 +30,18 @@ class User(db.Model, UserMixin):
 
         return None
 
-    def __str__(self):
-        return self.username
+    @staticmethod
+    def create_user(username: str, raw_password: str, admin: bool = False) -> Type["User"]:
+        """Returns a new user created with parameters provided, the raw_password is hashed."""
+        # Specifying exact hash parameters incase the default changes
+        return User(
+            username=username,
+            password=generate_password_hash(
+                raw_password,
+                method="pbkdf2:sha256:150000",
+                salt_length=16),
+            admin=admin
+        )
 
 
 class Currency(db.Model):

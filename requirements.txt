@@ -5,3 +5,4 @@ flask_wtf
 wtforms_components
 flask_sqlalchemy
 flask_admin
+pytest

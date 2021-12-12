@@ -1,7 +1,6 @@
 import os
 import json
 
-import click
 from flask import Flask, render_template
 
 
@@ -25,7 +24,10 @@ def create_app(testing=False):
         SECRET_KEY=secret_key,  # This should be a cryptographically secure value for production
         SQLALCHEMY_DATABASE_URI=db_uri,
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
-        FLASK_ADMIN_SWATCH="cerulean")
+        FLASK_ADMIN_SWATCH="cerulean",
+        # Disable csrf and flask-login's @login_required in testing
+        WTF_CSRF_ENABLED=not testing,
+        LOGIN_DISABLED=not testing)
 
     from .models import db, User, Location, Currency, Roomtype, Room, Booking  # noqa: F401
     db.init_app(app)

@@ -62,12 +62,9 @@ def fill_db_manually():
 
     db.session.commit()
 
-    db.session.add(User(
+    db.session.add(User.create_user(
         username="admin",
-        password=generate_password_hash(
-            "password",  # in production this should be actually secure
-            method="pbkdf2:sha256:150000",
-            salt_length=16),
+        raw_password="password",  # in production this should be actually secure
         admin=True))
 
     # Location name: total rooms there

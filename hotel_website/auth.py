@@ -4,7 +4,7 @@ from flask import Blueprint, redirect, url_for, flash, request
 from flask.templating import render_template
 from flask_login import LoginManager, login_required, current_user
 from flask_login.utils import login_user, logout_user
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import check_password_hash
 
 from .models import db, User, Booking
 from .forms import UsernamePasswordForm
@@ -51,17 +51,12 @@ def register():
         if User.query.filter_by(username=form.username.data).first():
             flash(f"The username {form.username.data} is taken.")
         else:
-            # Specifying exact hash parameters incase the default changes
-            user = User(
+            db.session.add(User.create_user(
                 username=form.username.data,
-                password=generate_password_hash(
-                    form.password.data,
-                    method="pbkdf2:sha256:150000",
-                    salt_length=16))
-
-            db.session.add(user)
+                raw_password=form.password.data))
             db.session.commit()
 
+            flash("Registered.")
             return redirect(url_for("auth.login"))
 
     if request.method == "POST" and form.username.errors:

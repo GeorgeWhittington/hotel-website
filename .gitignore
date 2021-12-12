@@ -1,4 +1,6 @@
 instance/config.json
+.DS_Store
+**/.pytest_cache/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -129,5 +131,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-.DS_Store
