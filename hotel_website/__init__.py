@@ -26,9 +26,8 @@ def create_app(testing=False):
         SQLALCHEMY_DATABASE_URI=db_uri,
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         FLASK_ADMIN_SWATCH="cerulean",
-        # Disable csrf and flask-login's @login_required in testing
-        WTF_CSRF_ENABLED=not testing,
-        LOGIN_DISABLED=not testing)
+        # Disable csrf in testing
+        WTF_CSRF_ENABLED=not testing)
 
     from .models import db, User, Location, Currency, Roomtype, Room, Booking  # noqa: F401
     db.init_app(app)
