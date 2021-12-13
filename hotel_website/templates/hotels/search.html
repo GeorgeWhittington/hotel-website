@@ -27,7 +27,7 @@
     </div>
   </div>
   <div class="results">
-    {% for location, room_type, price, discount_price, symbol in results %}
+    {% for location, room_type, guests, price, discount_price, symbol in results %}
       <div class="hotel-room">
         <img src="{{ url_for('static', filename=location.image) }}" />
         <div class="hotel-room-inner">
@@ -43,7 +43,7 @@
             {% else %}
               <p><strike>{{ symbol }}{{ "{:.2f}".format(price) }}</strike> {{ symbol }}{{ "{:.2f}".format(discount_price) }} for {{ booking_duration}}</p>
             {% endif %}
-            <p class="hotel-room-button"><a href="{{ url_for('hotels.room', location=location.id, room_type=room_type.id, booking_start=booking_start, booking_end=booking_end) }}">Book Now</a></p>
+            <p class="hotel-room-button"><a href="{{ url_for('hotels.room', location=location.id, room_type=room_type.id, booking_start=booking_start, booking_end=booking_end, guests=guests) }}">Book Now</a></p>
           </div>
         </div>
       </div>

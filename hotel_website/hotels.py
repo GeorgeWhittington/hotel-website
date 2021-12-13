@@ -66,17 +66,21 @@ def search():
         if location in location_ids:
             form.location.data = location
         else:
+            location = None
             flash(LOCATION_ERR)
 
         if not WhereToForm.test_duration(booking_start, booking_end):
             form.booking_start.data = booking_start
             form.booking_end.data = booking_end
         else:
+            booking_start = None
+            booking_end = None
             flash(DURATION_ERR)
 
         if not WhereToForm.test_guests(guests):
             form.guests.data = guests
         else:
+            guests = None
             flash(GUESTS_ERR)
 
     # Invalid search, don't populate results
@@ -115,7 +119,7 @@ def search():
             room_type=room_type, booking_start=booking_start,
             booking_end=booking_end, currency=currency, guests=guests)
 
-        rooms.append((location, room_type, price, discount_price, symbol))
+        rooms.append((location, room_type, guests, price, discount_price, symbol))
 
     # Get duration string, cut off HH:MM:SS data at the end
     booking_duration = str(booking_end - booking_start + timedelta(days=1))[:-9]
