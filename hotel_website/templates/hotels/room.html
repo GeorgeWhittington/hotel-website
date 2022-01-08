@@ -14,14 +14,18 @@
     alt="{{ location.image_alt_text }}"
   />
   <div class="hero-inner">
-    <h1>{{ room_types[room_type.room_type] }} Room in {{ location.name }}</h1>
-    <p>Max Occupants: {{ room_type.max_occupants }}</p>
-    <p>{{ location.rooms_available(booking_start, booking_end, room_types=(room_type,)) }} Rooms left</p>
-    {% if discount_price is none %}
-      <p>{{ symbol }}{{ "{:.2f}".format(price) }}</p>
-    {% else %}
-      <p><strike>{{ symbol }}{{ "{:.2f}".format(price) }}</strike> {{ symbol }}{{ "{:.2f}".format(discount_price) }}</p>
-    {% endif %}
+    <div>
+      <h1>{{ room_types[room_type.room_type] }} Room in {{ location.name }}</h1>
+    </div>
+    <div>
+      <p>Max Occupants: {{ room_type.max_occupants }}</p>
+      <p>{{ location.rooms_available(booking_start, booking_end, room_types=(room_type,)) }} Rooms left</p>
+      {% if discount_price is none %}
+        <p>{{ symbol }}{{ "{:.2f}".format(price) }}</p>
+      {% else %}
+        <p><strike>{{ symbol }}{{ "{:.2f}".format(price) }}</strike> {{ symbol }}{{ "{:.2f}".format(discount_price) }}</p>
+      {% endif %}
+    </div>
   </div>
 </header>
 

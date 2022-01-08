@@ -158,14 +158,17 @@
         flex-direction: column;
     }
 
-    .hotel-room-inner p {
+    .hotel-room-inner h3 {
+        padding-top: 0.5rem;
+    }
+
+    .hotel-room-info p {
         margin: 0;
     }
 
     .hotel-room-button {
         text-align: center;
-        margin-block-start: 1em !important;
-        margin-block-end: 1em !important;
+        white-space: nowrap;
     }
 
     .hotel-room-inner > * {
@@ -173,6 +176,9 @@
     }
 
     .hotel-room-booking {
-        text-align: left;
+        text-align: initial;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
     }
 }
