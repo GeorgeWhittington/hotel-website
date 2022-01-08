@@ -46,6 +46,10 @@
     cursor: pointer;
 }
 
+.hero form input[type="submit"]:hover {
+    background-color: var(--contrast-light-colour);
+}
+
 @media only screen and (max-width: 950px) {
     .hero form {
         grid-template-columns: repeat(2, minmax(0, 1fr));

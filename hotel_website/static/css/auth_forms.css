@@ -4,7 +4,7 @@ section.content .flash {
 
 form {
     width: 500px;
-    background-color: #A8DADC;
+    background-color: var(--content-bg-colour);
     padding: 0 15px;
     border-radius: 0.4rem;
 }
@@ -19,7 +19,7 @@ form input {
     display: block;
     width: 100%;
     margin-bottom: 1rem;
-    background-color: #F1FAEE;
+    background-color: var(--bg-colour);
     border: none;
     padding: 0.5rem;
     font-family: inherit;
@@ -27,9 +27,14 @@ form input {
 }
 
 form input[type=submit] {
-    background-color: #E63946;
-    color: #F1FAEE;
+    background-color: var(--contrast-colour);
+    color: var(--bg-colour);
     margin: 1rem 0;
+    cursor: pointer;
+}
+
+form input[type=submit]:hover {
+    background-color: var(--contrast-light-colour);
 }
 
 form label {

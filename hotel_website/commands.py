@@ -1,6 +1,5 @@
 import click
 from flask import Blueprint
-from werkzeug.security import generate_password_hash
 
 from .models import db, User, Location, Currency, Roomtype, Room, Booking  # noqa: F401
 
@@ -28,27 +27,28 @@ def fill_db_manually():
     pounds = Currency.query.filter_by(acronym="GBP").first()
 
     locations = [
-        ("Aberdeen", pounds, 140.0, 60.0, "images/aberdeen.jpg"),
-        ("Belfast", pounds, 130.0, 60.0, "images/belfast.jpg"),
-        ("Birmingham", pounds, 150.0, 70.0, "images/birmingham.jpg"),
-        ("Bristol", pounds, 140.0, 70.0, "images/bristol.jpg"),
-        ("Cardiff", pounds, 120.0, 60.0, "images/cardiff.jpg"),
-        ("Edinburgh", pounds, 160.0, 70.0, "images/edinburgh.jpg"),
-        ("Glasgow", pounds, 150.0, 70.0, "images/glasgow.jpg"),
-        ("London", pounds, 200.0, 80.0, "images/london.jpg"),
-        ("Manchester", pounds, 180.0, 80.0, "images/manchester.jpg"),
-        ("Newcastle", pounds, 100.0, 60.0, "images/newcastle.jpg"),
-        ("Norwich", pounds, 100.0, 60.0, "images/norwich.jpg"),
-        ("Nottingham", pounds, 120.0, 70.0, "images/nottingham.jpg"),
-        ("Oxford", pounds, 180.0, 70.0, "images/oxford.jpg"),
-        ("Plymouth", pounds, 180.0, 50.0, "images/plymouth.jpg"),
-        ("Swansea", pounds, 120.0, 50.0, "images/swansea.jpg")
+        ("Aberdeen", pounds, 140.0, 60.0, "images/aberdeen.jpg", "A picture of a street in Aberdeen."),
+        ("Belfast", pounds, 130.0, 60.0, "images/belfast.jpg", "A picture of a street in Belfast."),
+        ("Birmingham", pounds, 150.0, 70.0, "images/birmingham.jpg", "A picture of the skyline in Birmingham."),
+        ("Bristol", pounds, 140.0, 70.0, "images/bristol.jpg", "A picture taken in Bristol of the suspension bridge and the buildings near it."),
+        ("Cardiff", pounds, 120.0, 60.0, "images/cardiff.jpg", "A picture taken from Cardiff bay of the city."),
+        ("Edinburgh", pounds, 160.0, 70.0, "images/edinburgh.jpg", "A picture of Edinburgh taken from somewhere high."),
+        ("Glasgow", pounds, 150.0, 70.0, "images/glasgow.jpg", "A picture of Glasgow taken from somewhere high."),
+        ("London", pounds, 200.0, 80.0, "images/london.jpg", "A picture taken in London from above the Thames of the river and buildings on either side."),
+        ("Manchester", pounds, 180.0, 80.0, "images/manchester.jpg", "A picture taken in Manchester from the intersection of two streets."),
+        ("Newcastle", pounds, 100.0, 60.0, "images/newcastle.jpg", "A picture of the river Tyne in Newcastle."),
+        ("Norwich", pounds, 100.0, 60.0, "images/norwich.jpg", "A picture of Norwich, the sun is setting."),
+        ("Nottingham", pounds, 120.0, 70.0, "images/nottingham.jpg", "A picture of Nottingham."),
+        ("Oxford", pounds, 180.0, 70.0, "images/oxford.jpg", "A picture of Oxford, taken from somewhere high."),
+        ("Plymouth", pounds, 180.0, 50.0, "images/plymouth.jpg", "A picture of Plymouth, the sea is in frame."),
+        ("Swansea", pounds, 120.0, 50.0, "images/swansea.jpg", "A picture of Swansea.")
     ]
 
-    for name, currency, peak_price, off_peak_price, image in locations:
+    for name, currency, peak_price, off_peak_price, image, image_alt_text in locations:
         db.session.add(Location(
             name=name, currency=currency, peak_price=peak_price,
-            off_peak_price=off_peak_price, image=image
+            off_peak_price=off_peak_price, image=image,
+            image_alt_text=image_alt_text
         ))
 
     room_types = [

@@ -55,6 +55,10 @@
     cursor: pointer;
 }
 
+.filter form input[type="submit"]:hover {
+    background-color: var(--contrast-light-colour);
+}
+
 @media only screen and (max-width: 950px) {
     .search-content {
         grid-template-columns: 100%;
@@ -128,6 +132,11 @@
     background-color: var(--contrast-colour);
     color: var(--bg-colour);
     text-decoration: none;
+    cursor: pointer;
+}
+
+.hotel-room-booking a:hover {
+    background-color: var(--contrast-light-colour);
 }
 
 .hotel-room strike {

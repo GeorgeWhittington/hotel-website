@@ -1,11 +1,5 @@
 {% extends "base.html" %}
 
-<!-- TODO: 
-* give all images alt text
-* make the book/submit buttons change on hover (right now the cursor 
-just changes to a pointer, they should change colour or something)
--->
-
 {% block title %}Home{% endblock %}
 
 {% block styles %}
@@ -39,7 +33,10 @@ just changes to a pointer, they should change colour or something)
       {% for location in locations %}
         <li class="carousel-item">
           <a href="{{ url_for('hotels.search', location=location.id, booking_start=start_date, booking_end=end_date, guests=1) }}">
-            <img src="{{ url_for('static', filename=location.image) }}"/>
+            <img
+              src="{{ url_for('static', filename=location.image) }}"
+              alt="{{ location.image_alt_text }}"
+            />
           </a>
           <div class="carousel-item-text">
             <a href="{{ url_for('hotels.search', location=location.id, booking_start=start_date, booking_end=end_date, guests=1) }}">

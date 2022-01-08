@@ -65,6 +65,7 @@ class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     image = db.Column(db.String(1024), nullable=True)  # Long, for image paths
+    image_alt_text = db.Column(db.Text, nullable=True)
     peak_price = db.Column(db.Numeric(precision=10, scale=2), nullable=False)
     off_peak_price = db.Column(db.Numeric(precision=10, scale=2), nullable=False)
 

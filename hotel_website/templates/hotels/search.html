@@ -29,7 +29,10 @@
   <div class="results">
     {% for location, room_type, guests, price, discount_price, symbol in results %}
       <div class="hotel-room">
-        <img src="{{ url_for('static', filename=location.image) }}" />
+        <img
+          src="{{ url_for('static', filename=location.image) }}"
+          alt="{{ location.image_alt_text }}"
+        />
         <div class="hotel-room-inner">
           <div class="hotel-room-info">
             <h3>{{ location.name }}</h3>

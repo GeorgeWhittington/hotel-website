@@ -9,7 +9,10 @@
 {% block content %}
 
 <header class="hero">
-  <img src="{{ url_for('static', filename=location.image ) }}" />
+  <img
+    src="{{ url_for('static', filename=location.image ) }}"
+    alt="{{ location.image_alt_text }}"
+  />
   <div class="hero-inner">
     <h1>{{ room_types[room_type.room_type] }} Room in {{ location.name }}</h1>
     <p>Max Occupants: {{ room_type.max_occupants }}</p>
