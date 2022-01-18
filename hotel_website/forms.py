@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 from flask import flash
-from flask_wtf import FlaskForm
+from flask_wtf import Form, FlaskForm
 from wtforms import StringField, PasswordField, SelectField, FormField, ValidationError
 from wtforms_components import DateField, IntegerField, DateRange, EmailField
 from wtforms.validators import InputRequired, Length, NumberRange, Regexp
@@ -86,7 +86,15 @@ class WhereToForm(FlaskForm):
                 guests > MAX_GUESTS)
 
 
-class AddressForm(FlaskForm):
+class AddressForm(Form):
+    """Form for entering address.
+
+    This form is only to be used nested inside a parent form which has csrf enabled.
+    Used on its own it is *not* secure.
+    """
+    class Meta:
+        csrf = False
+
     # TODO: Probably need to add more placeholder text and styling, but I'm bored now, do it later
     address_1 = StringField(
         "Address Line 1",
@@ -101,7 +109,15 @@ class AddressForm(FlaskForm):
     country = SelectField("Country", choices=COUNTRIES_TUPLES, validators=[InputRequired()])
 
 
-class CardExpiryForm(FlaskForm):
+class CardExpiryForm(Form):
+    """Form for entering card expiry.
+
+    This form is only to be used nested inside a parent form which has csrf enabled.
+    Used on its own it is *not* secure.
+    """
+    class Meta:
+        csrf = False
+
     expiry_month = IntegerField(
         "Month",
         render_kw={"placeholder": "Month"},
@@ -119,7 +135,15 @@ class CardExpiryForm(FlaskForm):
         self.expiry_year.validators += [NumberRange(min=today.year, max=today.year + 15)]
 
 
-class CardForm(FlaskForm):
+class CardForm(Form):
+    """Form for entering card details.
+
+    This form is only to be used nested inside a parent form which has csrf enabled.
+    Used on its own it is *not* secure.
+    """
+    class Meta:
+        csrf = False
+
     card_type = SelectField("Card Type", choices=CARD_TYPES_TUPLES, validators=[InputRequired()])
     card_number = StringField("Card Number", render_kw={"placeholder": "Card Number"}, validators=[InputRequired()])
     # Regex: exactly three digits

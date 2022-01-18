@@ -129,33 +129,44 @@ def search():
         booking_start=booking_start, booking_end=booking_end, booking_duration=booking_duration)
 
 
-@bp.route("/room")
+@bp.route("/room", methods=["GET", "POST"])
 @login_required
 def room():
+    location_ids = [loc_id for loc_id, in Location.query.with_entities(Location.id).all()]
+    room_type_ids = [rtype_id for rtype_id, in Roomtype.query.with_entities(Roomtype.id).all()]
+
     location = request.args.get("location", type=int)
     room_type = request.args.get("room_type", type=int)
     booking_start = request.args.get("booking_start", type=date.fromisoformat)
     booking_end = request.args.get("booking_end", type=date.fromisoformat)
     guests = request.args.get("guests", type=int)
 
-    for uh in (location, room_type, booking_start, booking_end, guests):
-        print(uh)
+    if location not in location_ids:
+        location = None
+        flash(LOCATION_ERR)
+
+    if room_type not in room_type_ids:
+        room_type = None
+        flash("Invalid room type selected.")
+
+    if WhereToForm.test_duration(booking_start, booking_end):
+        booking_start = None
+        booking_end = None
+        flash(DURATION_ERR)
+
+    if WhereToForm.test_guests(guests):
+        guests = None
+        flash(GUESTS_ERR)
 
     if None in (location, room_type, booking_start, booking_end, guests):
-        flash("Invalid room")
         return redirect(url_for("hotels.home"))
-
-    # TODO: So the form here should probably let you adjust the number of guests,
-    # the room type and the booking start + end. So the same pattern of checking
-    # url + form as used on search should be used here.
-    #
-    # EXCEPT! Have two forms. Pls. One for selecting that lot, then a second for
-    # actually booking. Do it the way /search-submit was working, external page that
-    # does the logic for each form. I think make the adjustments form loop back to here,
-    # the booking form go to somewhere else.
 
     location_obj = Location.query.get(location)
     room_type_obj = Roomtype.query.get(room_type)
+
+    if room_type_obj.max_occupants < guests:
+        flash("Too many guests for the room type selected.")
+        return redirect(url_for("hotels.home"))
 
     rooms = Room.query.outerjoin(Room.bookings).where(
         Room.room_type_id == room_type,
@@ -188,8 +199,21 @@ def room():
     form = BookingForm()
 
     if form.validate_on_submit():
+        print("validated")
         return redirect(url_for("hotels.room_confirm"))
 
+    for error in form.address.errors:
+        print(error)
+
+    for error in form.card_details.errors:
+        print(error)
+
+    # TODO: Decide how to render form errors that can't
+    # be checked on the frontend, see about adding more html5
+    # input elements so that more checks are done on the front end.
+
+    # TODO: might have too much stuff getting passed induvidually, it's messy.
+    # Consider creating one dict/object that a bunch of things are contained within
     return render_template(
         "hotels/room.html", rooms=rooms, room_types=ROOM_TYPES,
         location=location_obj, room_type=room_type_obj, form=form,

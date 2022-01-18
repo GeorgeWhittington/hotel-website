@@ -297,3 +297,4 @@ COUNTRIES = {
 }
 
 COUNTRIES_TUPLES = [(code, full_name) for code, full_name in COUNTRIES.items()]
+COUNTRIES_TUPLES.sort(key=lambda pair: pair[1])
