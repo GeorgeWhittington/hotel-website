@@ -194,7 +194,8 @@ def room():
         "hotels/room.html", rooms=rooms, room_types=ROOM_TYPES,
         location=location_obj, room_type=room_type_obj, form=form,
         booking_start=booking_start, booking_end=booking_end,
-        symbol=symbol, price=price, discount_price=discount_price)
+        symbol=symbol, price=price, discount_price=discount_price,
+        guests=guests)
 
 
 @bp.route("/room_confirm")

@@ -2,13 +2,24 @@
     align-items: flex-start !important;
 }
 
+.hero,
+.booking-details,
+form {
+    width: 100%;
+    background-color: var(--content-bg-colour);
+    border-radius: 0.4rem;
+}
+
+.booking-details,
+form {
+    padding: 0.5rem;
+    margin-top: 15px;
+}
+
 /* Header */
 
 .hero {
-    width: 100%;
     display: flex;
-    background-color: var(--content-bg-colour);
-    border-radius: 0.4rem;
 }
 
 .hero img {
@@ -41,4 +52,85 @@
     }
 }
 
+/* Booking Details */
+
+.booking-details h1 {
+    margin: 0;
+}
+
+.booking-details p {
+    margin: 0;
+}
+
 /* Booking Form */
+
+form h1 {
+    margin: 0;
+}
+
+form h2 {
+    margin: 1rem 0 0 0;
+    font-size: 1rem;
+}
+
+form select,
+form input[type="text"],
+form input[type="email"],
+form input[type="number"],
+form input[type="submit"] {
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    border-radius: 0.4rem;
+    padding: 0.5rem 0.25rem;
+}
+
+form select,
+form input[type="text"],
+form input[type="email"],
+form input[type="number"] {
+    background-color: var(--bg-colour);
+    color: inherit;
+}
+
+form input[type="submit"] {
+    background-color: var(--contrast-colour);
+    color: var(--bg-colour);
+    cursor: pointer;
+}
+
+form input[type="submit"]:hover {
+    background-color: var(--contrast-light-colour);
+}
+
+.form-personal {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.form-address {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: 100%;
+}
+
+.form-card {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.form-card > * {
+    grid-column: 1 / span 2;
+}
+
+/* Select last two children of the form card section */
+.form-card input:nth-last-child(-n + 2) {
+    grid-column: initial;
+}
+
+form input[type="submit"] {
+    width: 100%;
+    margin-top: 1rem;
+}

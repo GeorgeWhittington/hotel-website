@@ -102,8 +102,14 @@ class AddressForm(FlaskForm):
 
 
 class CardExpiryForm(FlaskForm):
-    expiry_month = IntegerField("Month", validators=[InputRequired(), NumberRange(min=1, max=12)])
-    expiry_year = IntegerField("Year", validators=[InputRequired()])
+    expiry_month = IntegerField(
+        "Month",
+        render_kw={"placeholder": "Month"},
+        validators=[InputRequired(), NumberRange(min=1, max=12)])
+    expiry_year = IntegerField(
+        "Year",
+        render_kw={"placeholder": "Year"},
+        validators=[InputRequired()])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

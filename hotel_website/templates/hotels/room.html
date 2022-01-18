@@ -20,42 +20,58 @@
     <div>
       <p>Max Occupants: {{ room_type.max_occupants }}</p>
       <p>{{ location.rooms_available(booking_start, booking_end, room_types=(room_type,)) }} Rooms left</p>
-      {% if discount_price is none %}
-        <p>{{ symbol }}{{ "{:.2f}".format(price) }}</p>
-      {% else %}
-        <p><strike>{{ symbol }}{{ "{:.2f}".format(price) }}</strike> {{ symbol }}{{ "{:.2f}".format(discount_price) }}</p>
-      {% endif %}
     </div>
   </div>
 </header>
 
+<div class="booking-details">
+  <h1>Booking details:</h1>
+  <p><b>Guests:</b> {{ guests }}</p>
+  <p><b>Booking start:</b> {{ booking_start }}</p>
+  <p><b>Booking end:</b> {{ booking_end }}</p>
+  <p><b>Cost:</b>
+    {% if discount_price is none %}
+      {{ symbol }}{{ "{:.2f}".format(price) }}
+    {% else %}
+      <strike>{{ symbol }}{{ "{:.2f}".format(price) }}</strike> {{ symbol }}{{ "{:.2f}".format(discount_price) }}
+    {% endif %}
+  </p>
+</div>
+
 <form method="POST" action="#">
+  <h1>Book this room now:</h1>
   {{ form.csrf_token }}
   <h2>Personal Information</h2>
-  {{ form.full_name }}
-  {{ form.email }}
+  <div class="form-personal">
+    {{ form.full_name }}
+    {{ form.email }}
+  </div>
   <h2>Address</h2>
-  {{ form.address.address_1 }}
-  {{ form.address.address_2 }}
-  {{ form.address.postcode }}
-  <select name="address-country" id="address-country" required>
-    <option value="" disabled selected>Select Country</option>
-    {% for option in form.address.country %}
-      {{ option }}
-    {% endfor %}
-  </select>
+  <div class="form-address">
+    {{ form.address.address_1 }}
+    {{ form.address.address_2 }}
+    {{ form.address.postcode }}
+    <select name="address-country" id="address-country" required>
+      <option value="" disabled selected>Select Country</option>
+      {% for option in form.address.country %}
+        {{ option }}
+      {% endfor %}
+    </select>
+  </div>
   <h2>Card Details</h2>
-  <select name="card_details-card_type" id="card_details-card_type" required>
-    <option value="" disabled selected>Select Card Type</option>
-    {% for option in form.card_details.card_type %}
-      {{ option }}
-    {% endfor %}
-  </select>
-  {{ form.card_details.card_number }}
-  {{ form.card_details.security_code }}
-  {{ form.card_details.expiry_date.label }}
-  {{ form.card_details.expiry_date.expiry_month }}
-  {{ form.card_details.expiry_date.expiry_year }}
+  <div class="form-card">
+    <select name="card_details-card_type" id="card_details-card_type" required>
+      <option value="" disabled selected>Select Card Type</option>
+      {% for option in form.card_details.card_type %}
+        {{ option }}
+      {% endfor %}
+    </select>
+    {{ form.card_details.card_number }}
+    {{ form.card_details.security_code }}
+    {{ form.card_details.expiry_date.label }}
+    {{ form.card_details.expiry_date.expiry_month }}
+    {{ form.card_details.expiry_date.expiry_year }}
+  </div>
   <input type="submit" value="Book">
 </form>
 {% endblock %}
