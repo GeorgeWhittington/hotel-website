@@ -64,6 +64,11 @@ form {
 
 /* Booking Form */
 
+/*
+TODO: Sort the form styles, they're a bit messy
+cause I changed stuff a bunch
+*/
+
 form h1 {
     margin: 0;
 }
@@ -71,6 +76,10 @@ form h1 {
 form h2 {
     margin: 1rem 0 0 0;
     font-size: 1rem;
+}
+
+form span {
+    color: var(--contrast-colour);
 }
 
 form select,
@@ -112,7 +121,15 @@ form input[type="submit"]:hover {
 .form-address {
     display: grid;
     gap: 0.5rem;
-    grid-template-columns: 100%;
+    grid-template-columns: auto minmax(0, 1fr);
+}
+
+.form-address :nth-child(3) {
+    grid-column: 2;
+}
+
+.form-address span {
+    align-self: center;
 }
 
 .form-card {
@@ -121,12 +138,29 @@ form input[type="submit"]:hover {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
+.form-personal div,
+.form-address div,
+.form-card div {
+    display: flex;
+    align-items: center;
+}
+
+form input,
+form select {
+    width: 100%;
+}
+
+.form-personal span,
+.form-card span {
+    padding-right: 0.5rem;
+}
+
 .form-card > * {
     grid-column: 1 / span 2;
 }
 
 /* Select last two children of the form card section */
-.form-card input:nth-last-child(-n + 2) {
+.form-card div:nth-last-child(-n + 2) {
     grid-column: initial;
 }
 

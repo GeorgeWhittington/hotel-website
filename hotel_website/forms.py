@@ -2,8 +2,8 @@ from datetime import date, timedelta
 
 from flask import flash
 from flask_wtf import Form, FlaskForm
-from wtforms import StringField, PasswordField, SelectField, FormField, ValidationError
-from wtforms_components import DateField, IntegerField, DateRange, EmailField
+from wtforms import PasswordField, SelectField, FormField, ValidationError
+from wtforms_components import DateField, IntegerField, DateRange, EmailField, StringField
 from wtforms.validators import InputRequired, Length, NumberRange, Regexp
 
 from .constants import COUNTRIES_TUPLES, CARD_TYPES_TUPLES, MAX_GUESTS, LOCATION_ERR, DURATION_ERR, GUESTS_ERR
@@ -95,7 +95,6 @@ class AddressForm(Form):
     class Meta:
         csrf = False
 
-    # TODO: Probably need to add more placeholder text and styling, but I'm bored now, do it later
     address_1 = StringField(
         "Address Line 1",
         render_kw={"placeholder": "Address Line 1"},
@@ -149,7 +148,7 @@ class CardForm(Form):
     # Regex: exactly three digits
     security_code = StringField(
         "Security Code", render_kw={"placeholder": "Security Code"},
-        validators=[InputRequired(), Regexp(r"^\d{3}$")])
+        validators=[InputRequired(), Regexp(r"^\d{3,4}$")])
     expiry_date = FormField(CardExpiryForm, label="Expiry Date")
 
     def validate_card_number(form, field):

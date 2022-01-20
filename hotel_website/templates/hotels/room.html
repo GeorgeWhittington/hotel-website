@@ -43,14 +43,28 @@
   {{ form.csrf_token }}
   <h2>Personal Information</h2>
   <div class="form-personal">
-    {{ form.full_name }}
-    {{ form.email }}
+    <div>
+      <span>*</span>
+      {{ form.full_name }}
+    </div>
+    <div>
+      <span>*</span>
+      {{ form.email }}
+    </div>
   </div>
   <h2>Address</h2>
   <div class="form-address">
+    <span>*</span>
     {{ form.address.address_1 }}
     {{ form.address.address_2 }}
-    {{ form.address.postcode }}
+    <span>*</span>
+    <!-- TODO: This is stupidly brittle. Should instead iterate across
+    the validators and test for the Length validator class, then render. -->
+    {{ form.address.postcode(
+      minlength=form.address.postcode.validators[1]["min"],
+      maxlength=form.address.postcode.validators[1]["max"]
+    ) }}
+    <span>*</span>
     <select name="address-country" id="address-country" required>
       <option value="" disabled selected>Select Country</option>
       {% for option in form.address.country %}
@@ -60,17 +74,34 @@
   </div>
   <h2>Card Details</h2>
   <div class="form-card">
-    <select name="card_details-card_type" id="card_details-card_type" required>
-      <option value="" disabled selected>Select Card Type</option>
-      {% for option in form.card_details.card_type %}
-        {{ option }}
-      {% endfor %}
-    </select>
-    {{ form.card_details.card_number }}
-    {{ form.card_details.security_code }}
-    {{ form.card_details.expiry_date.label }}
-    {{ form.card_details.expiry_date.expiry_month }}
-    {{ form.card_details.expiry_date.expiry_year }}
+    <div>
+      <span>*</span>
+      <select name="card_details-card_type" id="card_details-card_type" required>
+        <option value="" disabled selected>Select Card Type</option>
+        {% for option in form.card_details.card_type %}
+          {{ option }}
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <span>*</span>
+      {{ form.card_details.card_number }}
+    </div>
+    <div>
+      <span>*</span>
+      {{ form.card_details.security_code }}
+    </div>
+    <div>
+      {{ form.card_details.expiry_date.label }}
+    </div>
+    <div>
+      <span>*</span>
+      {{ form.card_details.expiry_date.expiry_month }}
+    </div>
+    <div>
+      <span>*</span>
+      {{ form.card_details.expiry_date.expiry_year }}
+    </div>
   </div>
   <input type="submit" value="Book">
 </form>

@@ -198,19 +198,17 @@ def room():
 
     form = BookingForm()
 
-    if form.validate_on_submit():
-        print("validated")
-        return redirect(url_for("hotels.room_confirm"))
+    if request.method == "POST":
+        if form.validate_on_submit():
+            # TODO: Create actual booking in db here? send the id of the created
+            # row as a url arg during redirect?
+            return redirect(url_for("hotels.room_confirm"))
 
-    for error in form.address.errors:
-        print(error)
+        if form.card_details.card_number.errors:
+            flash("Please enter a valid card number, only numbers and spaces are allowed.")
 
-    for error in form.card_details.errors:
-        print(error)
-
-    # TODO: Decide how to render form errors that can't
-    # be checked on the frontend, see about adding more html5
-    # input elements so that more checks are done on the front end.
+        if form.card_details.security_code.errors:
+            flash("Please enter a valid 3 or 4 digit security code.")
 
     # TODO: might have too much stuff getting passed induvidually, it's messy.
     # Consider creating one dict/object that a bunch of things are contained within
