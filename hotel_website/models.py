@@ -165,16 +165,31 @@ class Room(db.Model):
 
 
 class Booking(db.Model):
-    # TODO: Do I want to store limited address/card info from the form
-    # so that the reciept pdf can be generated multiple times,
-    # or do we just store a generated pdf, and whenever the user wants to
-    # modify their booking, they have to re-enter all info?
+    """ Table for bookings of rooms.
+
+    Card information is stored here, but *not* cvc, as storing this
+    is illegal.
+    """
+    # TODO: Assess if storing the name/address/card details on this table breaks
+    # normalisation
     id = db.Column(db.Integer, primary_key=True)
     guests = db.Column(db.Integer, nullable=False)
     booking_start = db.Column(db.Date, nullable=False)
     booking_end = db.Column(db.Date, nullable=False)
     date_created = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
     date_updated = db.Column(db.DateTime(timezone=True), onupdate=func.now())
+
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(200), nullable=False)
+
+    address_1 = db.Column(db.String(200), nullable=False)
+    address_2 = db.Column(db.String(200), nullable=True)
+    postcode = db.Column(db.String(20), nullable=False)
+    country = db.Column(db.String(2), nullable=False)
+
+    card_type = db.Column(db.String(1), nullable=False)
+    card_number = db.Column(db.String(50), nullable=False)
+    expiry_date = db.Column(db.Date(), nullable=False)
 
     room_id = db.Column(db.Integer, db.ForeignKey("room.id"))
     room = db.relationship("Room", backref=db.backref("bookings", lazy=True))

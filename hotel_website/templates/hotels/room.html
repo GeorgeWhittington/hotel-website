@@ -58,12 +58,14 @@
     {{ form.address.address_1 }}
     {{ form.address.address_2 }}
     <span>*</span>
-    <!-- TODO: This is stupidly brittle. Should instead iterate across
-    the validators and test for the Length validator class, then render. -->
-    {{ form.address.postcode(
-      minlength=form.address.postcode.validators[1]["min"],
-      maxlength=form.address.postcode.validators[1]["max"]
-    ) }}
+    {% for validator in form.address.postcode.validators %}
+      {% if isinstance(validator, length_validator) %}
+        {{ form.address.postcode(
+          minlength=validator["min"],
+          maxlength=validator["max"])
+        }}
+      {% endif %}
+    {% endfor %}
     <span>*</span>
     <select name="address-country" id="address-country" required>
       <option value="" disabled selected>Select Country</option>

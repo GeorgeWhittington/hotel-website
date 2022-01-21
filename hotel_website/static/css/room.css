@@ -64,11 +64,6 @@ form {
 
 /* Booking Form */
 
-/*
-TODO: Sort the form styles, they're a bit messy
-cause I changed stuff a bunch
-*/
-
 form h1 {
     margin: 0;
 }
@@ -124,14 +119,6 @@ form input[type="submit"]:hover {
     grid-template-columns: auto minmax(0, 1fr);
 }
 
-.form-address :nth-child(3) {
-    grid-column: 2;
-}
-
-.form-address span {
-    align-self: center;
-}
-
 .form-card {
     display: grid;
     gap: 0.5rem;
@@ -148,6 +135,14 @@ form input[type="submit"]:hover {
 form input,
 form select {
     width: 100%;
+}
+
+.form-address :nth-child(3) {
+    grid-column: 2;
+}
+
+.form-address span {
+    align-self: center;
 }
 
 .form-personal span,
@@ -167,4 +162,10 @@ form select {
 form input[type="submit"] {
     width: 100%;
     margin-top: 1rem;
+}
+
+@media only screen and (max-width: 650px) {
+    .form-personal {
+        grid-template-columns: 100%;
+    }
 }

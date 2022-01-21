@@ -4,6 +4,7 @@ import calendar
 from sqlalchemy import or_, and_, not_, func, text
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required
+from wtforms.validators import Length
 
 from .models import db, Location, Booking, Room, Roomtype, Currency
 from .forms import WhereToForm, BookingForm
@@ -217,7 +218,7 @@ def room():
         location=location_obj, room_type=room_type_obj, form=form,
         booking_start=booking_start, booking_end=booking_end,
         symbol=symbol, price=price, discount_price=discount_price,
-        guests=guests)
+        guests=guests, length_validator=Length, isinstance=isinstance)
 
 
 @bp.route("/room_confirm")
