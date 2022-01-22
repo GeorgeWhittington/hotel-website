@@ -23,15 +23,21 @@
         <tr>
           <th>#</th>
           <th>Location Name</th>
-          <th>Number of Bookings</th>
+          <th>Total Bookings</th>
+          {% for room_type in room_types %}
+            <th>{{ ROOM_TYPES[room_type.room_type]}} Room Bookings</th>
+          {% endfor %}
         </tr>
       </thead>
       <tbody>
-        {% for location, no_bookings in bookings %}
+        {% for location, total, s, d, f in bookings %}
           <tr>
             <th scope="row">{{ location.id }}</th>
             <td>{{ location.name }}</td>
-            <td>{{ no_bookings }}</td>
+            <td>{{ total }}</td>
+            <td>{{ s }}</td>
+            <td>{{ d }}</td>
+            <td>{{ f }}</td>
           </tr>
         {% endfor %}
       </tbody>

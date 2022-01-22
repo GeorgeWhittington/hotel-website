@@ -8,6 +8,7 @@ import flask_login
 from sqlalchemy import text
 from sqlalchemy.sql import func
 
+from .constants import ROOM_TYPES
 from .forms import MonthAndLocationForm, MonthAndLocationsForm
 from .models import db, User, Location, Currency, Roomtype, Room, Booking
 
@@ -64,7 +65,9 @@ class BookingAnalyticsViews(BaseView):
                     month_start <= Booking.booking_end,
                     Booking.booking_start <= month_end).all()
 
-                return self.render("/admin/monthly_bookings.html", form=form, bookings=bookings)
+                return self.render(
+                    "/admin/monthly_bookings.html", form=form,
+                    bookings=bookings, room_types=ROOM_TYPES)
 
             flash("Please enter a location.")
 
@@ -84,21 +87,41 @@ class BookingAnalyticsViews(BaseView):
                 month=month_start.month,
                 day=monthrange(month_start.year, month_start.month)[1])
 
-            subquery = Booking.query.with_entities(Room.location_id, func.count(Booking.id).label("booking_count"))
-            subquery = subquery.join(Booking.room).where(
-                # Logic for testing if there is any overlap of ranges from:
-                # https://stackoverflow.com/a/3269471
-                month_start <= Booking.booking_end,
-                Booking.booking_start <= month_end
-            ).group_by(Room.location_id).subquery()
+            # A subquery is created for a total count and also each
+            # room type's count, then joined onto the main query.
+            room_types = Roomtype.query.order_by(Roomtype.max_occupants).all()
+            subquery_labels = [("total_count", None)]
+            subquery_labels += [(f"{ROOM_TYPES[rt.room_type]}_count", rt.room_type) for rt in room_types]
+            labels = (text(label) for label, _ in subquery_labels)
 
-            bookings = Location.query.with_entities(Location, text("booking_count"))
-            bookings = bookings.outerjoin(subquery, Location.id == subquery.c.location_id)
+            subquerys = []
+            for label, room_type in subquery_labels:
+                subquery = Booking.query.with_entities(
+                    Room.location_id,
+                    func.count(Booking.id).label(label))
+                subquery = subquery.join(Booking.room).where(
+                    # Logic for testing if there is any overlap of ranges from:
+                    # https://stackoverflow.com/a/3269471
+                    month_start <= Booking.booking_end,
+                    Booking.booking_start <= month_end
+                )
+
+                if room_type:
+                    subquery = subquery.join(Room.room_type).where(
+                        Roomtype.room_type == room_type)
+
+                subquery = subquery.group_by(Room.location_id).subquery()
+                subquerys.append(subquery)
+
+            bookings = Location.query.with_entities(Location, *labels)
+            for subquery in subquerys:
+                bookings = bookings.outerjoin(subquery, Location.id == subquery.c.location_id)
             bookings = bookings.where(Location.id.in_(form.locations.data)).all()
 
             return self.render(
                 "/admin/compare_bookings.html", form=form, bookings=bookings,
-                month=month_start.strftime("%B %Y"))
+                month=month_start.strftime("%B %Y"), room_types=room_types,
+                ROOM_TYPES=ROOM_TYPES)
 
         return self.render("/admin/compare_bookings.html", form=form)
 

@@ -31,7 +31,8 @@
           <th>Booking End</th>
           <th>Date Created</th>
           <th>Date Updated</th>
-          <th>Room</th>
+          <th>Location</th>
+          <th>Room Type</th>
         </tr>
       </thead>
       <tbody>
@@ -43,7 +44,8 @@
             <td>{{ booking.booking_end }}</td>
             <td>{{ booking.date_created }}</td>
             <td>{{ booking.date_updated }}</td>
-            <td>{{ booking.room }}</td>
+            <td>{{ booking.room.location.name }}</td>
+            <td>{{ room_types[booking.room.room_type.room_type] }}</td>
           </tr>
         {% endfor %}
       </tbody>
