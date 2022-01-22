@@ -1,0 +1,8 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+  <h1>Hotel Analytics</h1>
+  <ul>
+    <li><a href="{{ url_for('analytics.monthly_bookings') }}">Monthly bookings at a hotel</a></li>
+    <li><a href="{{ url_for('analytics.compare_bookings') }}">Compare bookings across hotels</a></li>
+  </ul>
+{% endblock %}

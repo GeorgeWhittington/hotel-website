@@ -1,0 +1,40 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+  <h1>Compare bookings</h1>
+  <p>Use this page to compare the bookings at multiple hotels.</p>
+  <form method="POST" action="{{ url_for('analytics.compare_bookings') }}">
+    {{ form.csrf_token }}
+    <div class="form-group">
+      {{ form.month.label }}
+      {{ form.month(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.locations.label }}
+      {{ form.locations(class="form-control")}}
+      <small id=locationHelp class="form-text text-muted">Hold down ctrl/cmd to select multiple options</small>
+    </div>
+    <input type="submit" value="Generate Report" class="btn btn-primary">
+  </form>
+  {% if bookings is defined %}
+    <hr>
+    <h2>Bookings in {{ month }}</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Location Name</th>
+          <th>Number of Bookings</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for location, no_bookings in bookings %}
+          <tr>
+            <th scope="row">{{ location.id }}</th>
+            <td>{{ location.name }}</td>
+            <td>{{ no_bookings }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}

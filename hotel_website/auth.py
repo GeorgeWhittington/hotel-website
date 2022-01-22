@@ -73,4 +73,9 @@ def my_account():
         Booking.booking_end >= date.today()
     ).all()
 
+    # TODO: Form which allows modification of user's data
+    # and an actually finished + styled summary of all bookings.
+    # Each booking should have a link to access the pdf associated,
+    # and a link to pages where you can cancel/update it.
+
     return render_template("auth/my_account.html", bookings=bookings)

@@ -1,12 +1,19 @@
-from flask import redirect, url_for, request
-from flask_admin import Admin, AdminIndexView, expose
+from calendar import monthrange
+from datetime import date
+
+from flask import redirect, url_for, request, flash
+from flask_admin import Admin, AdminIndexView, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
 import flask_login
+from sqlalchemy import text
+from sqlalchemy.sql import func
 
+from .forms import MonthAndLocationForm, MonthAndLocationsForm
 from .models import db, User, Location, Currency, Roomtype, Room, Booking
 
 
 class CustomIndexView(AdminIndexView):
+    """Custom admin site index view, to make it fully inaccessible to non-admin users."""
     @expose("/")
     def custom_index(self):
         if self.is_accessible():
@@ -22,6 +29,7 @@ class CustomIndexView(AdminIndexView):
 
 
 class CustomModelView(ModelView):
+    """Custom admin site model view, to make it fully inaccessible to non-admin users."""
     def is_accessible(self):
         return flask_login.current_user.is_authenticated and flask_login.current_user.admin
 
@@ -29,7 +37,79 @@ class CustomModelView(ModelView):
         return redirect(url_for("auth.login", next=request.url))
 
 
-admin = Admin(template_mode="bootstrap3", index_view=CustomIndexView())
+class BookingAnalyticsViews(BaseView):
+    @expose("/")
+    def index(self):
+        return self.render("/admin/analytics_home.html")
+
+    @expose("/monthly_bookings", methods=["GET", "POST"])
+    def monthly_bookings(self):
+        form = MonthAndLocationForm()
+
+        locations = Location.query.with_entities(Location.id, Location.name).order_by(Location.name).all()
+        form.location.choices = [(loc_id, loc_name) for loc_id, loc_name in locations]
+
+        if request.method == "POST":
+            if form.validate_on_submit():
+                month_start = form.month.data
+                month_end = date(
+                    year=month_start.year,
+                    month=month_start.month,
+                    day=monthrange(month_start.year, month_start.month)[1])
+
+                bookings = Location.query.with_entities(Booking).join(Location.rooms, Room.bookings).where(
+                    Location.id == form.location.data,
+                    # Logic for testing if there is any overlap of ranges from:
+                    # https://stackoverflow.com/a/3269471
+                    month_start <= Booking.booking_end,
+                    Booking.booking_start <= month_end).all()
+
+                return self.render("/admin/monthly_bookings.html", form=form, bookings=bookings)
+
+            flash("Please enter a location.")
+
+        return self.render("/admin/monthly_bookings.html", form=form)
+
+    @expose("/compare_bookings", methods=["GET", "POST"])
+    def compare_bookings(self):
+        form = MonthAndLocationsForm()
+
+        locations = Location.query.with_entities(Location.id, Location.name).order_by(Location.name).all()
+        form.locations.choices = [(loc_id, loc_name) for loc_id, loc_name in locations]
+
+        if form.validate_on_submit():
+            month_start = form.month.data
+            month_end = date(
+                year=month_start.year,
+                month=month_start.month,
+                day=monthrange(month_start.year, month_start.month)[1])
+
+            subquery = Booking.query.with_entities(Room.location_id, func.count(Booking.id).label("booking_count"))
+            subquery = subquery.join(Booking.room).where(
+                # Logic for testing if there is any overlap of ranges from:
+                # https://stackoverflow.com/a/3269471
+                month_start <= Booking.booking_end,
+                Booking.booking_start <= month_end
+            ).group_by(Room.location_id).subquery()
+
+            bookings = Location.query.with_entities(Location, text("booking_count"))
+            bookings = bookings.outerjoin(subquery, Location.id == subquery.c.location_id)
+            bookings = bookings.where(Location.id.in_(form.locations.data)).all()
+
+            return self.render(
+                "/admin/compare_bookings.html", form=form, bookings=bookings,
+                month=month_start.strftime("%B %Y"))
+
+        return self.render("/admin/compare_bookings.html", form=form)
+
+    def is_accessible(self):
+        return flask_login.current_user.is_authenticated and flask_login.current_user.admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("auth.login", next=request.url))
+
+
+admin = Admin(template_mode="bootstrap4", index_view=CustomIndexView())
 
 admin.add_view(CustomModelView(User, db.session))
 admin.add_view(CustomModelView(Location, db.session))
@@ -37,3 +117,5 @@ admin.add_view(CustomModelView(Currency, db.session))
 admin.add_view(CustomModelView(Roomtype, db.session))
 admin.add_view(CustomModelView(Room, db.session))
 admin.add_view(CustomModelView(Booking, db.session))
+
+admin.add_view(BookingAnalyticsViews(name='Booking Analytics', endpoint='analytics'))

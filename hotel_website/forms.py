@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 from flask import flash
 from flask_wtf import Form, FlaskForm
-from wtforms import PasswordField, SelectField, FormField, ValidationError
+from wtforms import PasswordField, SelectField, FormField, ValidationError, MonthField, SelectMultipleField
 from wtforms_components import DateField, IntegerField, DateRange, EmailField, StringField
 from wtforms.validators import InputRequired, Length, NumberRange, Regexp
 
@@ -103,7 +103,7 @@ class AddressForm(Form):
     # Longest postcodes globally seem to be ~12 chars
     postcode = StringField(
         "Postcode",
-        render_kw={"placeholder": "Postcode"},
+        render_kw={"placeholder": "Postcode", "minlength": "1", "maxlength": "15"},
         validators=[InputRequired(), Length(min=1, max=15)])
     country = SelectField("Country", choices=COUNTRIES_TUPLES, validators=[InputRequired()])
 
@@ -167,3 +167,13 @@ class BookingForm(FlaskForm):
     address = FormField(AddressForm, label="Address")
 
     card_details = FormField(CardForm, label="Card Details")
+
+
+class MonthAndLocationForm(FlaskForm):
+    month = MonthField("Month", validators=[InputRequired()])
+    location = SelectField("Hotel Location", coerce=int, validators=[InputRequired()])
+
+
+class MonthAndLocationsForm(FlaskForm):
+    month = MonthField("Month", validators=[InputRequired()])
+    locations = SelectMultipleField("Hotel Locations", coerce=int, render_kw={"aria-describedby": "locationHelp"}, validators=[InputRequired()])
