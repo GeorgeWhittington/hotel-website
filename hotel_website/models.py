@@ -182,9 +182,7 @@ class Booking(db.Model):
     """
     # TODO: Assess if storing the name/address/card details on this table breaks
     # normalisation
-    # TODO: Store currency in use when booking was created.
-    # Whenever it's price is accessed (booking.find_room_prices()) this should be used
-    # in the calculation
+    # TODO: Store currency in use when booking was created
     id = db.Column(db.Integer, primary_key=True)
     guests = db.Column(db.Integer, nullable=False)
     booking_start = db.Column(db.Date, nullable=False)

@@ -3,11 +3,15 @@
 ## Requirements
 * [Python 3.9](https://www.python.org/downloads/)
 * [MySQL](https://dev.mysql.com/downloads/mysql/)
-* [MySQL Python Connector](https://dev.mysql.com/downloads/connector/python/)
 
 ## Python Requirements
+Before trying to install the python requirements, read the readme for mysqlclient, as the steps before installing via pip differ depending on which OS you use. https://pypi.org/project/mysqlclient/.
+
+There are no instructions for Windows, but this stack overflow thread seems to explain the process: https://stackoverflow.com/questions/26866147/mysql-python-install-error-cannot-open-include-file-config-win-h. I don't use Windows for development, so I can't verify that this solution works, apologies.
+
 Install these using pip. The command `python -m pip install -r requirements.txt` should work, but please do ensure you're using the python executable that you want to eventually run the website with.
 * [Flask 2.0](https://pypi.org/project/Flask/)
+* [mysqlclient](https://pypi.org/project/mysqlclient/)
 * [flask_login](https://pypi.org/project/Flask-Login/)
 * [wtforms >= 3.0.1](https://pypi.org/project/WTForms/)
 * [flask_wtf](https://pypi.org/project/Flask-WTF/)
