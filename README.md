@@ -2,6 +2,7 @@
 
 ## Requirements
 * [Python 3.9](https://www.python.org/downloads/)
+* [MySQL](https://dev.mysql.com/downloads/mysql/)
 
 ## Python Requirements
 Before trying to install the python requirements, read the readme for mysqlclient, as the steps before installing via pip differ depending on which OS you use. https://pypi.org/project/mysqlclient/.
@@ -26,7 +27,7 @@ This project is set up to use the [flask cli](https://flask.palletsprojects.com/
 
 To create the tables of the database, you will need to run the command: `python -m flask create-db`.
 
-If you want to populate the database from a database dump, skip the fill-db command.
+If you want to populate the database from a database dump, skip the fill-db command and do that instead.
 
 To populate the database, run the command: `python -m flask fill-db`.
 
