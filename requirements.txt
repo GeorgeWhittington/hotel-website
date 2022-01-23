@@ -1,5 +1,4 @@
 flask==2.0.2
-mysqlclient
 flask_login
 flask_wtf
 wtforms_components
