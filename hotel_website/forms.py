@@ -14,6 +14,11 @@ class UsernamePasswordForm(FlaskForm):
     password = PasswordField("Password", validators=[InputRequired()])
 
 
+class UsernamePasswordUpdateForm(FlaskForm):
+    username = StringField("Username", validators=[InputRequired(), Length(max=20)])
+    password = PasswordField("Change Password")
+
+
 class WhereToForm(FlaskForm):
     location = SelectField("Location", coerce=int, validators=[InputRequired()])
     booking_start = DateField(

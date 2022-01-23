@@ -6,7 +6,21 @@
 {% endblock %}
 {% block content %}
 <h1>Welcome, {{ current_user.username }}</h1>
-<h2>Your bookings:</h2>
+<h2>Your account details</h2>
+<form method="POST" action="{{ url_for('auth.my_account') }}">
+    {{ form.csrf_token }}
+    <label for="{{ form.username.name }}">
+        {% if form.username.flags.required %}
+            <span>*</span>
+        {% endif %}
+        {{ form.username.label.text }}
+    </label>
+    {{ form.username }}
+    {{ form.password.label }}
+    {{ form.password }}
+    <input type="submit" value="Update">
+</form>
+<h2>Your bookings</h2>
 <div class="bookings">
     {% for booking in bookings %}
     <div class="booking">

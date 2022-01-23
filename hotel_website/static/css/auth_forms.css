@@ -24,6 +24,12 @@ form input {
     padding: 0.5rem;
     font-family: inherit;
     border-radius: 0.4rem;
+    font-size: inherit;
+}
+
+form input[type="text"],
+form input[type="password"] {
+    color: var(--text-colour);
 }
 
 form input[type=submit] {

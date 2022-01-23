@@ -7,8 +7,8 @@ from flask_login.utils import login_user, logout_user
 from werkzeug.security import check_password_hash
 
 from .constants import ROOM_TYPES
-from .forms import UsernamePasswordForm
-from .models import db, User, Booking, Currency
+from .forms import UsernamePasswordForm, UsernamePasswordUpdateForm
+from .models import db, User, Booking
 
 bp = Blueprint("auth", __name__)
 login_manager = LoginManager()
@@ -66,7 +66,7 @@ def register():
     return render_template("auth/register.html", form=form)
 
 
-@bp.route("/my-account")
+@bp.route("/my-account", methods=["GET", "POST"])
 @login_required
 def my_account():
     bookings = Booking.query.where(
@@ -74,10 +74,36 @@ def my_account():
         Booking.booking_end >= date.today()
     ).all()
 
-    # TODO: Form which allows modification of user's data
-    # and an actually finished + styled summary of all bookings.
-    # Each booking should have a link to access the pdf associated,
-    # and a link to pages where you can cancel/update it.
+    form = UsernamePasswordUpdateForm()
+
+    if not form.username.data:
+        form.username.data = current_user.username
+
+    if request.method == "POST":
+        if form.validate_on_submit():
+            change = False
+            if current_user.username != form.username.data:
+                if User.query.filter_by(username=form.username.data).first():
+                    flash(f"The username {form.username.data} is taken.")
+                    return render_template(
+                        "auth/my_account.html", bookings=bookings,
+                        ROOM_TYPES=ROOM_TYPES, form=form)
+                else:
+                    current_user.username = form.username.data
+                    change = True
+
+            if form.password.data:
+                current_user.update_password(form.password.data)
+                change = True
+
+            if change:
+                db.session.add(current_user)
+                db.session.commit()
+                flash("Account updated!")
+
+        if form.username.errors:
+            flash("Your username cannot be longer than 20 characters.")
 
     return render_template(
-        "auth/my_account.html", bookings=bookings, ROOM_TYPES=ROOM_TYPES)
+        "auth/my_account.html", bookings=bookings, ROOM_TYPES=ROOM_TYPES,
+        form=form)
