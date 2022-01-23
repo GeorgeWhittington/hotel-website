@@ -20,6 +20,7 @@
     {{ form.password }}
     <input type="submit" value="Update">
 </form>
+{% if bookings %}
 <h2>Your bookings</h2>
 <div class="bookings">
     {% for booking in bookings %}
@@ -43,4 +44,5 @@
     </div>
     {% endfor %}
 </div>
+{% endif %}
 {% endblock %}

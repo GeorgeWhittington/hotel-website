@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/delete_booking.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Are you sure?</h1>
+<p>Cancelling your booking now will cost {{ symbol }}{{ "{:.2f}".format(cancel_price) }}, are you sure you want to?</p>
+<form method="POST" action="{{ url_for('hotels.delete_booking', booking_id=booking_id) }}">
+    <input type="submit" value="Yes">
+</form>
+{% endblock %}

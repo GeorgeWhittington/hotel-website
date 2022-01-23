@@ -250,6 +250,10 @@ def room_confirm(booking_id):
         flash("Invalid booking.")
         return redirect(url_for("hotels.home"))
 
+    if booking.booking_end < date.today():
+        flash("That booking is in the past.")
+        return redirect(url_for("hotels.home"))
+
     return render_template("/hotels/room_confirm.html", booking_id=booking_id)
 
 
@@ -262,6 +266,10 @@ def booking_pdf(booking_id):
         flash("Invalid booking.")
         return redirect(url_for("hotels.home"))
 
+    if booking.booking_end < date.today():
+        flash("That booking is in the past.")
+        return redirect(url_for("hotels.home"))
+
     if not (current_user.admin or booking.user.id == current_user.id):
         flash("You are not authorised to view this booking.")
         return redirect(url_for("hotels.home"))
@@ -271,13 +279,7 @@ def booking_pdf(booking_id):
 
     symbol = CURRENCY_SYMBOLS[currency_acronym]
 
-    price, discount_price = booking.room.location.find_room_prices(
-        room_type=booking.room.room_type, booking_start=booking.booking_start,
-        booking_end=booking.booking_end, currency=currency, guests=booking.guests,
-        date_booked=date(
-            year=booking.date_created.year,
-            month=booking.date_created.month,
-            day=booking.date_created.day))
+    price, discount_price = booking.find_room_prices(currency)
 
     html = render_template(
         "/pdf/booking.html", booking=booking, ROOM_TYPES=ROOM_TYPES,
@@ -285,7 +287,46 @@ def booking_pdf(booking_id):
     return render_pdf(HTML(string=html))
 
 
-@bp.route("/delete_booking/<booking_id>")
+@bp.route("/delete_booking/<booking_id>", methods=["GET", "POST"])
 @login_required
 def delete_booking(booking_id):
-    pass
+    booking = Booking.query.get(booking_id)
+
+    if not booking:
+        flash("Invalid booking.")
+        return redirect(url_for("hotels.home"))
+
+    if booking.booking_end < date.today():
+        flash("That booking is in the past.")
+        return redirect(url_for("hotels.home"))
+
+    if booking.user.id != current_user.id:
+        flash("You are not authorised to cancel this booking.")
+        return redirect(url_for("hotels.home"))
+
+    currency_acronym = request.cookies.get("current_currency", default="GBP")
+    currency = Currency.query.filter_by(acronym=currency_acronym).first()
+
+    symbol = CURRENCY_SYMBOLS[currency_acronym]
+
+    price, discount_price = booking.find_room_prices(currency)
+
+    cancel_price = discount_price if discount_price else price
+    diff = (booking.booking_start - date.today()).days
+
+    if diff < 30:
+        pass
+    elif diff < 60:
+        cancel_price * 0.5
+    else:
+        cancel_price = 0
+
+    if request.method == "POST":
+        db.session.delete(booking)
+        db.session.commit()
+        flash("Booking cancelled.")
+        return redirect(url_for("hotels.home"))
+
+    return render_template(
+        "/hotels/delete_booking.html", booking_id=booking_id, symbol=symbol,
+        cancel_price=cancel_price)

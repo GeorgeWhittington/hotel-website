@@ -50,10 +50,6 @@ section {
     margin: 1rem 0 1rem 0;
 }
 
-/* TODO: Extract the booking.html styles to their own sheet,
-or squash the pdf html into one file too. Which I end up doing
-depends on if I actually do need any other pdfs. */
-
 /* Table */
 
 table {

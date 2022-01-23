@@ -1,58 +1,87 @@
-{% extends "pdf/base.html" %}
-
-{% block content %}
-<div class="center">
-  <p><b>Booking ID:</b> {{ booking.id }}</p>
-  <p><b>Booking Date:</b> {{ booking.date_created.strftime('%d-%m-%Y') }}</p>
-</div>
-<h2>Booking Details</h2>
-<div class="grid">
-  <p><b>Check in:</b></p>
-  <p>{{ booking.booking_start.strftime('%A %d %B, %Y') }}</p><br>
-  <p><b>Check out:</b></p>
-  <p>{{ booking.booking_end.strftime('%A %d %B, %Y') }}</p><br>
-  <p><b>Room Type:</b></p>
-  <p>{{ ROOM_TYPES[booking.room.room_type.room_type] }}</p><br>
-  <p><b>Number of Guests:</b></p>
-  <p>{{ booking.guests }}</p><br>
-</div>
-<h2>Booked By</h2>
-<div class="grid">
-  <p><b>Name:</b></p>
-  <p>{{ booking.name }}</p><br>
-  <p><b>Contact:</b></p>
-  <p>{{ booking.email }}</p><br>
-</div>
-<table>
-  <thead>
-    <th>Description</th>
-    <th>Cost</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{ (booking.booking_end - booking.booking_start).days }} day stay in {{ booking.room.location.name }}</td>
-      <td>{{ symbol }}{{ "{:.2f}".format(price) }}</td>
-    </tr>
-    {% if discount_price %}
-    <tr>
-      <td>Discount for booking in advance</td>
-      <td>-{{ symbol }}{{ "{:.2f}".format(price - discount_price) }}</td>
-    </tr>
-    {% endif %}
-  </tbody>
-  <tfoot>
-    <td>Total</td>
-    {% if discount_price %}
-      <td>{{ symbol }}{{ "{:.2f}".format(discount_price) }}</td>
-    {% else %}
-      <td>{{ symbol }}{{ "{:.2f}".format(price) }}</td>
-    {% endif %}
-  </tfoot>
-</table>
-<h2>Additional Notes</h2>
-<p>
-  Booking cancellation before 60 days of booking date does not incur cancellation charges.
-  Booking cancellation between 30 and 60 days of booking date will incur charges up to 50% of booking price.
-  Within 30 days of booking date 100% of booking price will be charged.
-</p>
-{% endblock %}
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="{{ url_for('static', filename='css/pdf_booking.css') }}" rel="stylesheet">
+  </head>
+  
+  <body>
+    <header> 
+      <h1>Horizon Hotels</h1>
+      <div class="contact">
+        <div class="contact-inner">
+          <img src="{{ url_for('static', filename='svgs/phone-solid.svg') }}">
+          <p>1234567890</p>
+        </div>
+        <div class="contact-inner">
+          <img src="{{ url_for('static', filename='svgs/envelope-solid.svg') }}">
+          <p>info@horizonhotels.com</p>
+        </div>
+        <div class="contact-inner">
+          <img src="{{ url_for('static', filename='svgs/globe-solid.svg') }}">
+          <p>https://horizonhotels.com</p>
+        </div>
+      </div>
+    </header>
+    <hr>
+    <section>
+      <div class="center">
+        <p><b>Booking ID:</b> {{ booking.id }}</p>
+        <p><b>Booking Date:</b> {{ booking.date_created.strftime('%d-%m-%Y') }}</p>
+      </div>
+      <h2>Booking Details</h2>
+      <div class="grid">
+        <p><b>Check in:</b></p>
+        <p>{{ booking.booking_start.strftime('%A %d %B, %Y') }}</p><br>
+        <p><b>Check out:</b></p>
+        <p>{{ booking.booking_end.strftime('%A %d %B, %Y') }}</p><br>
+        <p><b>Room Type:</b></p>
+        <p>{{ ROOM_TYPES[booking.room.room_type.room_type] }}</p><br>
+        <p><b>Number of Guests:</b></p>
+        <p>{{ booking.guests }}</p><br>
+      </div>
+      <h2>Booked By</h2>
+      <div class="grid">
+        <p><b>Name:</b></p>
+        <p>{{ booking.name }}</p><br>
+        <p><b>Contact:</b></p>
+        <p>{{ booking.email }}</p><br>
+      </div>
+      <table>
+        <thead>
+          <th>Description</th>
+          <th>Cost</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ (booking.booking_end - booking.booking_start).days }} day stay in {{ booking.room.location.name }}</td>
+            <td>{{ symbol }}{{ "{:.2f}".format(price) }}</td>
+          </tr>
+          {% if discount_price %}
+          <tr>
+            <td>Discount for booking in advance</td>
+            <td>-{{ symbol }}{{ "{:.2f}".format(price - discount_price) }}</td>
+          </tr>
+          {% endif %}
+        </tbody>
+        <tfoot>
+          <td>Total</td>
+          {% if discount_price %}
+            <td>{{ symbol }}{{ "{:.2f}".format(discount_price) }}</td>
+          {% else %}
+            <td>{{ symbol }}{{ "{:.2f}".format(price) }}</td>
+          {% endif %}
+        </tfoot>
+      </table>
+      <h2>Additional Notes</h2>
+      <p>
+        Booking cancellation before 60 days of booking date does not incur cancellation charges.
+        Booking cancellation between 30 and 60 days of booking date will incur charges up to 50% of booking price.
+        Within 30 days of booking date 100% of booking price will be charged.
+      </p>
+    </section>
+    <hr>
+    <footer>
+      <p>All icons on this page are sourced from <a href="https://fontawesome.com">https://fontawesome.com</a> and used according to the licence at <a href="https://fontawesome.com/license">https://fontawesome.com/license</a></p>
+    </footer>
+  </body>
+</html>

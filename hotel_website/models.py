@@ -175,7 +175,7 @@ class Room(db.Model):
 
 
 class Booking(db.Model):
-    """ Table for bookings of rooms.
+    """Table for bookings of rooms.
 
     Card information is stored here, but *not* cvc, as storing this
     is illegal.

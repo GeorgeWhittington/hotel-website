@@ -1,0 +1,15 @@
+input {
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    border-radius: 0.4rem;
+    background-color: var(--contrast-colour);
+    color: var(--bg-colour);
+    cursor: pointer;
+    /* width: fit; */
+    padding: 0.5rem;
+}
+
+input:hover {
+    background-color: var(--contrast-light-colour);
+}

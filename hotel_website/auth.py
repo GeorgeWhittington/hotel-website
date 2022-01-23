@@ -72,7 +72,7 @@ def my_account():
     bookings = Booking.query.where(
         Booking.user == current_user,
         Booking.booking_end >= date.today()
-    ).all()
+    ).order_by(Booking.booking_start).all()
 
     form = UsernamePasswordUpdateForm()
 
