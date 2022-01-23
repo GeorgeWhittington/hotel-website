@@ -1,0 +1,7 @@
+a {
+    color: var(--contrast-colour);
+}
+
+a:hover {
+    color: var(--contrast-light-colour);
+}

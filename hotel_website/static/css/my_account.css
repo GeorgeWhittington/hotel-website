@@ -39,9 +39,9 @@
     margin: 0 0 1rem 0;
 }
 
-.booking svg,
 .booking i {
     margin-left: 0.5rem;
+    margin-bottom: 0.5rem;
     font-size: 1.25rem;
 }
 
@@ -53,7 +53,7 @@
     color: var(--contrast-light-colour);
 }
 
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 650px) {
     .booking {
         flex-direction: column;
     }
@@ -66,6 +66,5 @@
     .icons {
         flex-direction: column;
         align-items: center;
-        justify-content: space-between;
     }
 }

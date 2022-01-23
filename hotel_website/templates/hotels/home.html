@@ -27,7 +27,7 @@
   <h2>Our most popular locations</h2>
   <div class="carousel">
     <button class="carousel-control">
-      <img src="{{ url_for('static', filename='svgs/chevron-circle-left-solid.svg') }}" />
+      <i class="fas fa-chevron-circle-left"></i>
     </button>
     <ul class="carousel-inner">
       {% for location in locations %}
@@ -48,7 +48,7 @@
       {% endfor %}
     </ul>
     <button class="carousel-control">
-      <img src="{{ url_for('static', filename='svgs/chevron-circle-right-solid.svg') }}" />
+      <i class="fas fa-chevron-circle-right"></i>
     </button>
   </div>
 </div>

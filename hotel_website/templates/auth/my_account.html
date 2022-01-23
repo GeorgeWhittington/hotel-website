@@ -3,7 +3,6 @@
 {% block title %}My Account{% endblock %}
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/my_account.css') }}">
-<script src="https://kit.fontawesome.com/5fc9ec4da0.js" crossorigin="anonymous"></script>
 {% endblock %}
 {% block content %}
 <h1>Welcome, {{ current_user.username }}</h1>
@@ -23,7 +22,6 @@
                 <p><b>Guests:</b> {{ booking.guests }}</p>
             </div>
             <div class="icons">
-                <a title="Edit Booking" href="{{ url_for('hotels.edit_booking', booking_id=booking.id) }}"><i class="fas fa-edit"></i></a>
                 <a title="Cancel Booking" href="{{ url_for('hotels.delete_booking', booking_id=booking.id) }}"><i class="fas fa-trash"></i></a>
                 <a title="View Booking PDF" href="{{ url_for('hotels.booking_pdf', booking_id=booking.id) }}"><i class="fas fa-file-pdf"></i></a>
             </div>

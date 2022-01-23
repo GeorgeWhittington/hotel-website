@@ -223,7 +223,7 @@ def room():
             db.session.add(booking)
             db.session.commit()
 
-            return redirect(url_for("hotels.room_confirm", booking=booking.id))
+            return redirect(url_for("hotels.room_confirm", booking_id=booking.id))
 
         if form.card_details.card_number.errors:
             flash("Please enter a valid card number, only numbers and spaces are allowed.")
@@ -241,10 +241,9 @@ def room():
         guests=guests, length_validator=Length, isinstance=isinstance)
 
 
-@bp.route("/room_confirm")
+@bp.route("/room_confirm/<booking_id>")
 @login_required
-def room_confirm():
-    booking_id = request.args.get("booking", type=int)
+def room_confirm(booking_id):
     booking = Booking.query.get(booking_id)
 
     if not booking:
@@ -284,12 +283,6 @@ def booking_pdf(booking_id):
         "/pdf/booking.html", booking=booking, ROOM_TYPES=ROOM_TYPES,
         price=price, discount_price=discount_price, symbol=symbol)
     return render_pdf(HTML(string=html))
-
-
-@bp.route("/edit_booking/<booking_id>")
-@login_required
-def edit_booking(booking_id):
-    pass
 
 
 @bp.route("/delete_booking/<booking_id>")

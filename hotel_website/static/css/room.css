@@ -62,6 +62,12 @@ form {
     margin: 0;
 }
 
+.booking-details span {
+    margin: 0;
+    font-size: 0.80rem;
+    color: var(--contrast-colour);
+}
+
 /* Booking Form */
 
 form h1 {

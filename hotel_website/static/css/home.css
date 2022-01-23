@@ -152,11 +152,10 @@
     cursor: pointer;
 }
 
-.carousel-control img {
-    width: 2.5rem;
+.carousel-control i {
+    font-size: 2.5rem;
     display: block;
-    /* Modifies colour of svg using css rules */
-    filter: invert(17%) sepia(9%) saturate(5375%) hue-rotate(180deg) brightness(90%) contrast(89%);
+    color: var(--text-colour);
 }
 
 @media screen and (max-width: 768px) {
@@ -169,7 +168,7 @@
         height: 200px;
     }
 
-    .carousel-control img {
-        width: 1.5rem;
+    .carousel-control i {
+        font-size: 1.5rem;
     }
 }
