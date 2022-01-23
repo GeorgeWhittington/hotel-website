@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="{{ url_for('static', filename='css/pdf_base.css') }}" rel="stylesheet">
+  </head>
+  
+  <body>
+    <header> 
+      <h1>Horizon Hotels</h1>
+      <div class="contact">
+        <div class="contact-inner">
+          <img src="{{ url_for('static', filename='svgs/phone-solid.svg') }}">
+          <p>1234567890</p>
+        </div>
+        <div class="contact-inner">
+          <img src="{{ url_for('static', filename='svgs/envelope-solid.svg') }}">
+          <p>info@horizonhotels.com</p>
+        </div>
+        <div class="contact-inner">
+          <img src="{{ url_for('static', filename='svgs/globe-solid.svg') }}">
+          <p>https://horizonhotels.com</p>
+        </div>
+      </div>
+    </header>
+    <hr>
+    <section>
+      {% block content %}{% endblock %}
+    </section>
+    <hr>
+    <footer>
+      <p>All icons on this page are sourced from <a href="https://fontawesome.com">https://fontawesome.com</a> and used according to the licence at <a href="https://fontawesome.com/license">https://fontawesome.com/license</a></p>
+    </footer>
+  </body>
+</html>

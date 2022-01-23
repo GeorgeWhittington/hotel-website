@@ -127,6 +127,10 @@ nav .nav-button {
     cursor: pointer;
 }
 
+.selectNative:hover {
+    text-decoration: underline;
+}
+
 /* hidden from view but *not* from screenreaders */
 #currencyLabel {
     position: absolute !important;

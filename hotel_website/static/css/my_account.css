@@ -1,0 +1,71 @@
+.bookings {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.booking {
+    background-color: var(--content-bg-colour);
+    border-radius: 0.4rem;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.booking-inner {
+    display: flex;
+    justify-content: space-between;
+    flex-grow: 1;
+    padding: 1rem;
+}
+
+.icons {
+    display: flex;
+    flex-direction: row;
+}
+
+.booking img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.4rem 0 0 0.4rem;
+}
+
+.booking p {
+    margin: 0;
+}
+
+.booking h3 {
+    margin: 0 0 1rem 0;
+}
+
+.booking svg,
+.booking i {
+    margin-left: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.booking a {
+    color: var(--contrast-colour);
+}
+
+.booking a:hover {
+    color: var(--contrast-light-colour);
+}
+
+@media only screen and (max-width: 700px) {
+    .booking {
+        flex-direction: column;
+    }
+
+    .booking img {
+        width: 100%;
+        border-radius: 0.4rem 0.4rem 0 0;
+    }
+
+    .icons {
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

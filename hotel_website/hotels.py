@@ -3,7 +3,8 @@ import calendar
 
 from sqlalchemy import or_, and_, not_, func, text
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
+from flask_weasyprint import HTML, render_pdf
 from wtforms.validators import Length
 
 from .models import db, Location, Booking, Room, Roomtype, Currency
@@ -174,9 +175,9 @@ def room():
         Room.location_id == location,
         or_(
             Booking.id == None,  # noqa: E711
-            and_(
+            not_(and_(
                 booking_start <= Booking.booking_end,
-                Booking.booking_start <= booking_end))
+                Booking.booking_start <= booking_end)))
     ).group_by(Room).all()
 
     if len(rooms) == 0:
@@ -201,9 +202,28 @@ def room():
 
     if request.method == "POST":
         if form.validate_on_submit():
-            # TODO: Create actual booking in db here? send the id of the created
-            # row as a url arg during redirect?
-            return redirect(url_for("hotels.room_confirm"))
+            booking = Booking(
+                guests=guests,
+                booking_start=booking_start,
+                booking_end=booking_end,
+                name=form.full_name.data,
+                email=form.email.data,
+                address_1=form.address.address_1.data,
+                address_2=form.address.address_2.data,
+                postcode=form.address.postcode.data,
+                country=form.address.country.data,
+                card_type=form.card_details.card_type.data,
+                card_number=form.card_details.card_number.data,
+                expiry_date=date(
+                    year=form.card_details.expiry_date.expiry_year.data,
+                    month=form.card_details.expiry_date.expiry_month.data,
+                    day=1),
+                room=rooms[0],  # Select first of available rooms
+                user=current_user)
+            db.session.add(booking)
+            db.session.commit()
+
+            return redirect(url_for("hotels.room_confirm", booking=booking.id))
 
         if form.card_details.card_number.errors:
             flash("Please enter a valid card number, only numbers and spaces are allowed.")
@@ -224,5 +244,55 @@ def room():
 @bp.route("/room_confirm")
 @login_required
 def room_confirm():
-    return ("Your room was successfully booked :) (the user would "
-            "also have access to a pdf confirmation of their booking)", 200)
+    booking_id = request.args.get("booking", type=int)
+    booking = Booking.query.get(booking_id)
+
+    if not booking:
+        flash("Invalid booking.")
+        return redirect(url_for("hotels.home"))
+
+    return render_template("/hotels/room_confirm.html", booking_id=booking_id)
+
+
+@bp.route("/booking_<booking_id>.pdf")
+@login_required
+def booking_pdf(booking_id):
+    booking = Booking.query.get(booking_id)
+
+    if not booking:
+        flash("Invalid booking.")
+        return redirect(url_for("hotels.home"))
+
+    if not (current_user.admin or booking.user.id == current_user.id):
+        flash("You are not authorised to view this booking.")
+        return redirect(url_for("hotels.home"))
+
+    currency_acronym = request.cookies.get("current_currency", default="GBP")
+    currency = Currency.query.filter_by(acronym=currency_acronym).first()
+
+    symbol = CURRENCY_SYMBOLS[currency_acronym]
+
+    price, discount_price = booking.room.location.find_room_prices(
+        room_type=booking.room.room_type, booking_start=booking.booking_start,
+        booking_end=booking.booking_end, currency=currency, guests=booking.guests,
+        date_booked=date(
+            year=booking.date_created.year,
+            month=booking.date_created.month,
+            day=booking.date_created.day))
+
+    html = render_template(
+        "/pdf/booking.html", booking=booking, ROOM_TYPES=ROOM_TYPES,
+        price=price, discount_price=discount_price, symbol=symbol)
+    return render_pdf(HTML(string=html))
+
+
+@bp.route("/edit_booking/<booking_id>")
+@login_required
+def edit_booking(booking_id):
+    pass
+
+
+@bp.route("/delete_booking/<booking_id>")
+@login_required
+def delete_booking(booking_id):
+    pass

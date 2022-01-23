@@ -7,8 +7,9 @@ from flask_admin.contrib.sqla import ModelView
 import flask_login
 from sqlalchemy import text
 from sqlalchemy.sql import func
+from wtforms import StringField, SelectField
 
-from .constants import ROOM_TYPES
+from .constants import ROOM_TYPES, COUNTRIES_TUPLES, CARD_TYPES_TUPLES
 from .forms import MonthAndLocationForm, MonthAndLocationsForm
 from .models import db, User, Location, Currency, Roomtype, Room, Booking
 
@@ -132,13 +133,88 @@ class BookingAnalyticsViews(BaseView):
         return redirect(url_for("auth.login", next=request.url))
 
 
+class UserView(CustomModelView):
+    column_exclude_list = ["password"]
+    form_excluded_columns = ["bookings"]
+    form_widget_args = {
+        'password': {
+            'disabled': True
+        }
+    }
+    form_extra_fields = {
+        "raw_password": StringField()
+    }
+
+    def create_model(self, form):
+        """User creation from form input is overridden to correctly handle hashed passwords."""
+        try:
+            model = User.create_user(
+                username=form.username.data,
+                raw_password=form.raw_password.data,
+                admin=form.admin.data)
+            self.session.add(model)
+            self._on_model_change(form, model, True)
+            self.session.commit()
+        except Exception:
+            self.session.rollback()
+            return False
+        else:
+            self.after_model_change(form, model, True)
+
+        return model
+
+    def update_model(self, form, model):
+        """User object updates from form input are overridden to correctly handle hashed passwords."""
+        try:
+            if form.username.data:
+                model.username = form.username.data
+
+            if form.admin.data:
+                model.admin = form.admin.data
+
+            if form.raw_password.data:
+                model.update_password(form.raw_password.data)
+
+            self._on_model_change(form, model, False)
+            self.session.commit()
+        except Exception:
+            self.session.rollback()
+            return False
+        else:
+            self.after_model_change(form, model, False)
+
+        return True
+
+
+class CurrencyView(CustomModelView):
+    form_excluded_columns = ["hotels"]
+
+
+class RoomtypeView(CustomModelView):
+    form_excluded_columns = ["rooms"]
+
+
+class RoomView(CustomModelView):
+    form_excluded_columns = ["bookings"]
+
+
+class BookingView(CustomModelView):
+    can_export = True
+    form_excluded_columns = ["date_created", "date_updated"]
+
+    form_choices = {
+        "country": COUNTRIES_TUPLES,
+        "card_type": CARD_TYPES_TUPLES
+    }
+
+
 admin = Admin(template_mode="bootstrap4", index_view=CustomIndexView())
 
-admin.add_view(CustomModelView(User, db.session))
+admin.add_view(UserView(User, db.session))
 admin.add_view(CustomModelView(Location, db.session))
-admin.add_view(CustomModelView(Currency, db.session))
-admin.add_view(CustomModelView(Roomtype, db.session))
-admin.add_view(CustomModelView(Room, db.session))
-admin.add_view(CustomModelView(Booking, db.session))
+admin.add_view(CurrencyView(Currency, db.session))
+admin.add_view(RoomtypeView(Roomtype, db.session))
+admin.add_view(RoomView(Room, db.session))
+admin.add_view(BookingView(Booking, db.session))
 
 admin.add_view(BookingAnalyticsViews(name='Booking Analytics', endpoint='analytics'))

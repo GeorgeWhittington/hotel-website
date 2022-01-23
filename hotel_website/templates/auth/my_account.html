@@ -1,12 +1,34 @@
 {% extends "base.html" %}
 
 {% block title %}My Account{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/my_account.css') }}">
+<script src="https://kit.fontawesome.com/5fc9ec4da0.js" crossorigin="anonymous"></script>
+{% endblock %}
 {% block content %}
 <h1>Welcome, {{ current_user.username }}</h1>
 <h2>Your bookings:</h2>
-<ul>
+<div class="bookings">
     {% for booking in bookings %}
-    <li>{{ booking.guests }} {{ "guests" if booking.guests > 1 else "guest" }} in {{ booking.room.location.name }} from {{ booking.booking_start }} to {{ booking.booking_end }}</li>
+    <div class="booking">
+        <img 
+            src="{{ url_for('static', filename=booking.room.location.image) }}"
+            alt="{{ booking.room.location.image_alt_text }}"
+        >
+        <div class="booking-inner">
+            <div>
+                <h3>{{ ROOM_TYPES[booking.room.room_type.room_type] }} Room in {{ booking.room.location.name }}</h3>
+                <p><b>Check In:</b> {{ booking.booking_start.strftime("%A %d %B, %Y") }}</p>
+                <p><b>Check Out:</b> {{ booking.booking_end.strftime("%A %d %B, %Y") }}</p>
+                <p><b>Guests:</b> {{ booking.guests }}</p>
+            </div>
+            <div class="icons">
+                <a title="Edit Booking" href="{{ url_for('hotels.edit_booking', booking_id=booking.id) }}"><i class="fas fa-edit"></i></a>
+                <a title="Cancel Booking" href="{{ url_for('hotels.delete_booking', booking_id=booking.id) }}"><i class="fas fa-trash"></i></a>
+                <a title="View Booking PDF" href="{{ url_for('hotels.booking_pdf', booking_id=booking.id) }}"><i class="fas fa-file-pdf"></i></a>
+            </div>
+        </div>
+    </div>
     {% endfor %}
-</ul>
+</div>
 {% endblock %}

@@ -4,5 +4,6 @@ flask_login
 flask_wtf
 wtforms_components
 flask_sqlalchemy
-flask_admin
+flask_admin==1.5.8
 wtforms>=3.0.1
+flask_weasyprint

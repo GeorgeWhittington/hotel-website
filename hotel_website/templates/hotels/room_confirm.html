@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/room_confirm.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Your room is booked!</h1>
+<p>You can view all your bookings at your <a href="{{ url_for('auth.my_account') }}">profile page</a></p>
+<p>Download a pdf of your booking <a href="{{ url_for('hotels.booking_pdf', booking_id=booking_id) }}">here</a></p>
+{% endblock %}

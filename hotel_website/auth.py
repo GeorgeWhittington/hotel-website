@@ -6,8 +6,9 @@ from flask_login import LoginManager, login_required, current_user
 from flask_login.utils import login_user, logout_user
 from werkzeug.security import check_password_hash
 
-from .models import db, User, Booking
+from .constants import ROOM_TYPES
 from .forms import UsernamePasswordForm
+from .models import db, User, Booking, Currency
 
 bp = Blueprint("auth", __name__)
 login_manager = LoginManager()
@@ -78,4 +79,5 @@ def my_account():
     # Each booking should have a link to access the pdf associated,
     # and a link to pages where you can cancel/update it.
 
-    return render_template("auth/my_account.html", bookings=bookings)
+    return render_template(
+        "auth/my_account.html", bookings=bookings, ROOM_TYPES=ROOM_TYPES)

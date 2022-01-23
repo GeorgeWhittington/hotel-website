@@ -1,1 +1,1 @@
-All svg's here were sourced from fontawesome.com.
+All svgs here were sourced from fontawesome.com and are used according to the license at fontawesome.com/license.

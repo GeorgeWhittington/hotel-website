@@ -21,6 +21,12 @@ class User(db.Model, UserMixin):
     def __str__(self):
         return self.username
 
+    def update_password(self, raw_password: str) -> None:
+        self.password = generate_password_hash(
+            raw_password,
+            method="pbkdf2:sha256:150000",
+            salt_length=16)
+
     @staticmethod
     def get(user_id: str) -> Union["User", None]:
         user = User.query.get(user_id)
@@ -81,10 +87,14 @@ class Location(db.Model):
             booking_start: date,
             booking_end: date,
             currency: Currency,
-            guests: int) -> Tuple[float, Union[float, None]]:
+            guests: int,
+            date_booked: date = None) -> Tuple[float, Union[float, None]]:
         """Calculates the normal and discounted price of a room at a location.
         The price returned is in the currency supplied.
         """
+        if not date_booked:
+            date_booked = date.today()
+
         # Finding number of days that are part of the duration in each month
         # adapted from: https://stackoverflow.com/a/45816728
         current = booking_start
@@ -130,7 +140,7 @@ class Location(db.Model):
         if currency != self.currency:
             total_price *= float(currency.conversion_rate)
 
-        days_in_advance = (booking_start - date.today()).days
+        days_in_advance = (booking_start - date_booked).days
         if days_in_advance >= 80:
             discount_price = total_price * 0.80
         elif days_in_advance >= 60:
@@ -172,12 +182,13 @@ class Booking(db.Model):
     """
     # TODO: Assess if storing the name/address/card details on this table breaks
     # normalisation
+    # TODO: Store currency in use when booking was created
     id = db.Column(db.Integer, primary_key=True)
     guests = db.Column(db.Integer, nullable=False)
     booking_start = db.Column(db.Date, nullable=False)
     booking_end = db.Column(db.Date, nullable=False)
     date_created = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
-    date_updated = db.Column(db.DateTime(timezone=True), onupdate=func.now())
+    date_updated = db.Column(db.DateTime(timezone=True), onupdate=func.now())  # TODO: is this actually necessary?
 
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(200), nullable=False)
@@ -195,6 +206,18 @@ class Booking(db.Model):
     room = db.relationship("Room", backref=db.backref("bookings", lazy=True))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", backref=db.backref("bookings", lazy=True))
+
+    def find_room_prices(self, currency):
+        return self.room.location.find_room_prices(
+            room_type=self.room.room_type,
+            booking_start=self.booking_start,
+            booking_end=self.booking_end,
+            currency=currency,
+            guests=self.guests,
+            date_booked=date(
+                year=self.date_created.year,
+                month=self.date_created.month,
+                day=self.date_created.day))
 
 
 def rooms_available(self, start: date, end: date, **kwargs) -> int:
