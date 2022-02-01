@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 from flask import flash
 from flask_wtf import Form, FlaskForm
-from wtforms import PasswordField, SelectField, FormField, ValidationError, MonthField, SelectMultipleField
+from wtforms import Field, PasswordField, SelectField, FormField, ValidationError, MonthField, SelectMultipleField
 from wtforms_components import DateField, IntegerField, DateRange, EmailField, StringField
 from wtforms.validators import InputRequired, Length, NumberRange, Regexp
 
@@ -69,7 +69,7 @@ class WhereToForm(FlaskForm):
             flash(GUESTS_ERR)
 
     @staticmethod
-    def test_duration(booking_start, booking_end):
+    def test_duration(booking_start: date, booking_end: date) -> bool:
         """If the booking duration is invalid, returns True"""
         today = date.today()
         three_months = today + timedelta(days=90)
@@ -84,7 +84,7 @@ class WhereToForm(FlaskForm):
         )
 
     @staticmethod
-    def test_guests(guests):
+    def test_guests(guests: int) -> bool:
         """If the number of guests is invalid, returns True"""
         return (guests is None or
                 guests < 1 or
@@ -156,7 +156,7 @@ class CardForm(Form):
         validators=[InputRequired(), Regexp(r"^\d{3,4}$")])
     expiry_date = FormField(CardExpiryForm, label="Expiry Date")
 
-    def validate_card_number(form, field):
+    def validate_card_number(self, field: Field) -> None:
         # Only spaces and numbers are legal for the field
         try:
             spaces_stripped = "".join(field.data.split())

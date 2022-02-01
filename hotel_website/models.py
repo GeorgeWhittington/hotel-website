@@ -22,10 +22,7 @@ class User(db.Model, UserMixin):
         return self.username
 
     def update_password(self, raw_password: str) -> None:
-        self.password = generate_password_hash(
-            raw_password,
-            method="pbkdf2:sha256:150000",
-            salt_length=16)
+        self.password = self.generate_password_hash(raw_password)
 
     @staticmethod
     def get(user_id: str) -> Union["User", None]:
@@ -37,15 +34,19 @@ class User(db.Model, UserMixin):
         return None
 
     @staticmethod
+    def generate_password_hash(raw_password: str) -> str:
+        return generate_password_hash(
+            raw_password,
+            method="pbkdf2:sha256:15000",
+            salt_length=16)
+
+    @staticmethod
     def create_user(username: str, raw_password: str, admin: bool = False) -> Type["User"]:
         """Returns a new user created with parameters provided, the raw_password is hashed."""
         # Specifying exact hash parameters incase the default changes
         return User(
             username=username,
-            password=generate_password_hash(
-                raw_password,
-                method="pbkdf2:sha256:150000",
-                salt_length=16),
+            password=User.generate_password_hash(raw_password),
             admin=admin
         )
 
@@ -182,7 +183,9 @@ class Booking(db.Model):
     """
     # TODO: Assess if storing the name/address/card details on this table breaks
     # normalisation
-    # TODO: Store currency in use when booking was created
+    # TODO: Store currency in use when booking was created.
+    # Whenever it's price is accessed (booking.find_room_prices()) this should be used
+    # in the calculation
     id = db.Column(db.Integer, primary_key=True)
     guests = db.Column(db.Integer, nullable=False)
     booking_start = db.Column(db.Date, nullable=False)
@@ -207,7 +210,7 @@ class Booking(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", backref=db.backref("bookings", lazy=True))
 
-    def find_room_prices(self, currency):
+    def find_room_prices(self, currency: Currency) -> Tuple[float, Union[float, None]]:
         return self.room.location.find_room_prices(
             room_type=self.room.room_type,
             booking_start=self.booking_start,
@@ -220,7 +223,7 @@ class Booking(db.Model):
                 day=self.date_created.day))
 
 
-def rooms_available(self, start: date, end: date, **kwargs) -> int:
+def rooms_available(self, start: date, end: date, **kwargs: dict) -> int:
     """Finds the number of rooms available at a location during a time period
 
     Keyword Arguments:
