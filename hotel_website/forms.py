@@ -149,7 +149,9 @@ class CardForm(Form):
         csrf = False
 
     card_type = SelectField("Card Type", choices=CARD_TYPES_TUPLES, validators=[InputRequired()])
-    card_number = StringField("Card Number", render_kw={"placeholder": "Card Number"}, validators=[InputRequired()])
+    card_number = StringField(
+        "Card Number", render_kw={"placeholder": "Card Number"},
+        validators=[InputRequired(), Length(max=25)])
     # Regex: exactly three digits
     security_code = StringField(
         "Security Code", render_kw={"placeholder": "Security Code"},

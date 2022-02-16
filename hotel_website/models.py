@@ -181,17 +181,12 @@ class Booking(db.Model):
     Card information is stored here, but *not* cvc, as storing this
     is illegal.
     """
-    # TODO: Assess if storing the name/address/card details on this table breaks
-    # normalisation
-    # TODO: Store currency in use when booking was created.
-    # Whenever it's price is accessed (booking.find_room_prices()) this should be used
-    # in the calculation
     id = db.Column(db.Integer, primary_key=True)
     guests = db.Column(db.Integer, nullable=False)
     booking_start = db.Column(db.Date, nullable=False)
     booking_end = db.Column(db.Date, nullable=False)
     date_created = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
-    date_updated = db.Column(db.DateTime(timezone=True), onupdate=func.now())  # TODO: is this actually necessary?
+    date_updated = db.Column(db.DateTime(timezone=True), onupdate=func.now())
 
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(200), nullable=False)
@@ -205,17 +200,19 @@ class Booking(db.Model):
     card_number = db.Column(db.String(50), nullable=False)
     expiry_date = db.Column(db.Date(), nullable=False)
 
+    currency_id = db.Column(db.Integer, db.ForeignKey("currency.id"))
+    currency = db.relationship("Currency", backref=db.backref("bookings", lazy=True))
     room_id = db.Column(db.Integer, db.ForeignKey("room.id"))
     room = db.relationship("Room", backref=db.backref("bookings", lazy=True))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", backref=db.backref("bookings", lazy=True))
 
-    def find_room_prices(self, currency: Currency) -> Tuple[float, Union[float, None]]:
+    def find_room_prices(self) -> Tuple[float, Union[float, None]]:
         return self.room.location.find_room_prices(
             room_type=self.room.room_type,
             booking_start=self.booking_start,
             booking_end=self.booking_end,
-            currency=currency,
+            currency=self.currency,
             guests=self.guests,
             date_booked=date(
                 year=self.date_created.year,

@@ -218,6 +218,7 @@ def room():
                     year=form.card_details.expiry_date.expiry_year.data,
                     month=form.card_details.expiry_date.expiry_month.data,
                     day=1),
+                currency=currency,
                 room=rooms[0],  # Select first of available rooms
                 user=current_user)
             db.session.add(booking)
@@ -231,8 +232,6 @@ def room():
         if form.card_details.security_code.errors:
             flash("Please enter a valid 3 or 4 digit security code.")
 
-    # TODO: might have too much stuff getting passed induvidually, it's messy.
-    # Consider creating one dict/object that a bunch of things are contained within
     return render_template(
         "hotels/room.html", rooms=rooms, room_types=ROOM_TYPES,
         location=location_obj, room_type=room_type_obj, form=form,
@@ -274,12 +273,8 @@ def booking_pdf(booking_id):
         flash("You are not authorised to view this booking.")
         return redirect(url_for("hotels.home"))
 
-    currency_acronym = request.cookies.get("current_currency", default="GBP")
-    currency = Currency.query.filter_by(acronym=currency_acronym).first()
-
-    symbol = CURRENCY_SYMBOLS[currency_acronym]
-
-    price, discount_price = booking.find_room_prices(currency)
+    symbol = CURRENCY_SYMBOLS[booking.currency.acronym]
+    price, discount_price = booking.find_room_prices()
 
     html = render_template(
         "/pdf/booking.html", booking=booking, ROOM_TYPES=ROOM_TYPES,
@@ -304,12 +299,8 @@ def delete_booking(booking_id):
         flash("You are not authorised to cancel this booking.")
         return redirect(url_for("hotels.home"))
 
-    currency_acronym = request.cookies.get("current_currency", default="GBP")
-    currency = Currency.query.filter_by(acronym=currency_acronym).first()
-
-    symbol = CURRENCY_SYMBOLS[currency_acronym]
-
-    price, discount_price = booking.find_room_prices(currency)
+    symbol = CURRENCY_SYMBOLS[booking.currency.acronym]
+    price, discount_price = booking.find_room_prices()
 
     cancel_price = discount_price if discount_price else price
     diff = (booking.booking_start - date.today()).days

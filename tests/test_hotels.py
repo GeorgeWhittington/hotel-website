@@ -163,4 +163,3 @@ def test_room_get(client, auth):
         "guests": 1,
         "room_type": 1
     }).status_code == 200
-    # TODO: make sure more stuff is here, write tests for various things like with search pg

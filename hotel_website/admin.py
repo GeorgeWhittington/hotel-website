@@ -7,7 +7,7 @@ from flask_admin.contrib.sqla import ModelView
 import flask_login
 from sqlalchemy import text
 from sqlalchemy.sql import func
-from wtforms import StringField, SelectField
+from wtforms import StringField
 
 from .constants import ROOM_TYPES, COUNTRIES_TUPLES, CARD_TYPES_TUPLES
 from .forms import MonthAndLocationForm, MonthAndLocationsForm
