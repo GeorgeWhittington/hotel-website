@@ -321,3 +321,8 @@ def delete_booking(booking_id):
     return render_template(
         "/hotels/delete_booking.html", booking_id=booking_id, symbol=symbol,
         cancel_price=cancel_price)
+
+
+@bp.route("/privacy_policy")
+def privacy_policy():
+    return render_template("privacy.html")

@@ -44,6 +44,12 @@ section.content .flash {
     margin-bottom: 15px;
 }
 
+footer {
+    background-color: var(--content-bg-colour);
+    text-align: center;
+    padding: 1rem;
+}
+
 /* NAV */
 
 #nav-clearance {
