@@ -26,6 +26,7 @@
 </head>
 
 <body>
+  <div>
   <nav class="menu-closed">
     <a href="/" class="nav-logo">Horizon Hotels</a>
     <ul class="nav-menu">
@@ -72,6 +73,7 @@
     {% endfor %}
     {% block content %}{% endblock %}
   </section>
+  </div>
   <footer><a href="{{ url_for('hotels.privacy_policy') }}">Privacy Policy</a></footer>
 
 {% block scripts %}{% endblock %}
