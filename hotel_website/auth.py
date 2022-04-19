@@ -1,3 +1,5 @@
+# George Whittington, Student ID: 20026036, 2022
+
 from datetime import date
 
 from flask import Blueprint, redirect, url_for, flash, request

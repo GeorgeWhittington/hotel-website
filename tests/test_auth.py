@@ -1,3 +1,5 @@
+# George Whittington, Student ID: 20026036, 2022
+
 import pytest  # noqa: F401
 
 from hotel_website.models import User

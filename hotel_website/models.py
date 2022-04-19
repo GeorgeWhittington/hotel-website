@@ -1,3 +1,5 @@
+# George Whittington, Student ID: 20026036, 2022
+
 from typing import Union, Type, Tuple
 from datetime import date, timedelta
 import calendar

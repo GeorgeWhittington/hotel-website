@@ -1,3 +1,5 @@
+// George Whittington, Student ID: 20026036, 2022
+
 const nav = document.querySelector("nav");
 const navButton = document.querySelector("nav .nav-button");
 const navCurrencySelect = document.querySelector("nav .selectNative");

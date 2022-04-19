@@ -1,3 +1,5 @@
+# George Whittington, Student ID: 20026036, 2022
+
 from calendar import monthrange
 from datetime import date
 

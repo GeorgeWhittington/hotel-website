@@ -1,3 +1,5 @@
+// George Whittington, Student ID: 20026036, 2022
+
 const buttons = document.querySelectorAll(".carousel-control");
 const carousel = document.querySelector(".carousel-inner");
 const carouselItems = document.querySelectorAll(".carousel-item");

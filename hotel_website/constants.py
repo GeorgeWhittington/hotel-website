@@ -1,3 +1,5 @@
+# George Whittington, Student ID: 20026036, 2022
+
 PEAK_PRICING = {
     1: False,
     2: False,
